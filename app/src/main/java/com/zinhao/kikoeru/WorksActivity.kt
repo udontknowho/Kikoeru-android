@@ -786,6 +786,17 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
 
     // ==================== 生命周期 ====================
 
+    override fun onStart() {
+        super.onStart()
+        // 从后台回到前台 = 重新进 App：首页回到“全部作品”，不要停在上次点的标签/声优筛选上
+        // （“我的/收藏” tab 不重置；本来就是全部作品也不打扰，保留滚动位置）
+        if (App.getInstance().consumeHomeNeedsReset() && currentTab == TAB_HOME &&
+            viewModel.type != MainViewModel.TYPE_ALL_WORK
+        ) {
+            showAllWorks()
+        }
+    }
+
     override fun onDestroy() {
         ctrlBinder?.removeMusicChangeListener(this)
         val state = ctrlBinder?.controller?.playbackState?.state

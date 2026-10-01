@@ -101,6 +101,8 @@ public class App extends Application implements Application.ActivityLifecycleCal
     private boolean useNewLayout = false;
     /** 已 started 的 Activity 数,归零说明 App 退到后台了 */
     private int startedActivities = 0;
+    /** 退到后台时置位：回到前台后首页要回到“全部作品” */
+    private boolean homeNeedsReset = false;
 
 
     private final List<User> allUsers = new ArrayList<>();
@@ -429,7 +431,16 @@ public class App extends Application implements Application.ActivityLifecycleCal
         if (--startedActivities <= 0) {
             startedActivities = 0;
             AppLock.onBackground();
+            // 从后台回来就算“重新进 App”：首页不要停在上次点的标签/声优筛选上
+            homeNeedsReset = true;
         }
+    }
+
+    /** 取出（并清掉）“回前台要重置首页”的标记 */
+    public boolean consumeHomeNeedsReset() {
+        boolean value = homeNeedsReset;
+        homeNeedsReset = false;
+        return value;
     }
 
     @Override
