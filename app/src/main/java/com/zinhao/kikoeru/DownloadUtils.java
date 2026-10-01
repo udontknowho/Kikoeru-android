@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 import androidx.collection.SimpleArrayMap;
 import com.koushikdutta.async.http.AsyncHttpClient;
+import com.zinhao.kikoeru.network.HttpClientManager;
 import com.koushikdutta.async.http.AsyncHttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,6 +32,7 @@ public class DownloadUtils implements Closeable {
             .connectTimeout(5, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
+            .proxySelector(HttpClientManager.INSTANCE.getProxySelector())
             .build();
 
     public List<Mission> missionList = new ArrayList<>();

@@ -14,16 +14,38 @@ import javax.net.ssl.X509TrustManager
 
 object HttpClientManager {
     val TAG = "HttpClientManager"
+
+    /** 本地 mihomo 的混合端口(HTTP 和 SOCKS5 都吃) */
+    private const val LOCAL_PROXY_HOST = "127.0.0.1"
+    private const val LOCAL_PROXY_PORT = 7890
+
+    @Volatile
+    private var localProxyAlive: Boolean? = null
+
+    /** 探一次端口,活着就一直走它;mihomo 没开就直连 */
+    private fun isLocalProxyAlive(): Boolean {
+        localProxyAlive?.let { return it }
+        val alive = try {
+            Socket().use { it.connect(InetSocketAddress(LOCAL_PROXY_HOST, LOCAL_PROXY_PORT), 300) }
+            true
+        } catch (e: IOException) {
+            false
+        }
+        Log.i(TAG, "本地代理可用: $alive")
+        localProxyAlive = alive
+        return alive
+    }
+
     fun getPacEnabledClient(): OkHttpClient {
         val okHttpClientBuilder = OkHttpClient.Builder()
             .callTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
 //            .useNoSniSSL()
-            if(BuildConfig.DEBUG) {
-                okHttpClientBuilder.proxySelector(proxySelector)
-                okHttpClientBuilder.addInterceptor(LoggingInterceptor())
-            }
+            .proxySelector(proxySelector)
+        if(BuildConfig.DEBUG) {
+            okHttpClientBuilder.addInterceptor(LoggingInterceptor())
+        }
         return okHttpClientBuilder.build()
     }
 
@@ -50,8 +72,16 @@ object HttpClientManager {
                 return systemProxies
             }
 
-            //3. 国内流量或局域网,直连(原来这里有一段只在 debug 包里生效、硬编码到作者内网
-            // 代理 192.168.31.253:7890 的兜底逻辑,已删除:换台设备就是必然超时)
+            // 2. 本地 mihomo。这就是"只让这个 App 翻"的全部实现:只改 App 自己的出口,
+            //    不动系统代理、不影响别的应用
+            if (isLocalProxyAlive()) {
+                Log.i(TAG, "select:走本地代理 $LOCAL_PROXY_HOST:$LOCAL_PROXY_PORT")
+                return mutableListOf<Proxy?>(
+                    Proxy(Proxy.Type.HTTP, InetSocketAddress(LOCAL_PROXY_HOST, LOCAL_PROXY_PORT))
+                )
+            }
+
+            // 3. 直连
             Log.i(TAG, "select:直连")
             return mutableListOf<Proxy?>(Proxy.NO_PROXY)
         }

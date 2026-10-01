@@ -38,12 +38,15 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.android.exoplayer2.*;
+import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource;
 import com.google.android.exoplayer2.metadata.Metadata;
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpResponse;
 import com.zinhao.kikoeru.db.AudioLrcBind;
 import com.zinhao.kikoeru.db.User;
+import com.zinhao.kikoeru.network.HttpClientManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -190,7 +193,11 @@ public class AudioService extends Service {
         float[] position = App.getInstance().getPosition();
         lrcWindowParams = makeFloatWindowParams(position[0], position[1]);
         mHandler = new Handler(getMainLooper());
-        mediaPlayer = new ExoPlayer.Builder(this).build();
+        // 音频流走 OkHttp,才能吃 HttpClientManager 里的本地代理。
+        // ExoPlayer 默认的 DefaultHttpDataSource 内部是 HttpURLConnection,不认 OkHttp 的代理设置,
+        // 所以光给 API 请求加代理的话,列表能刷出来、音频照样卡死。
+        mediaPlayer = new ExoPlayer.Builder(this, new DefaultMediaSourceFactory(
+                new OkHttpDataSource.Factory(HttpClientManager.INSTANCE.getPacEnabledClient()))).build();
         mediaPlayer.addListener(new Player.Listener() {
             @Override
             public void onPlayerError(PlaybackException error) {

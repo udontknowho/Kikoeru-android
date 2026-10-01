@@ -11,6 +11,7 @@ import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.module.AppGlideModule;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
+import com.zinhao.kikoeru.network.HttpClientManager;
 
 import java.io.InputStream;
 
@@ -20,7 +21,9 @@ public class ProgressGlideModule extends AppGlideModule {
     @Override
     public void registerComponents(@NonNull @org.jspecify.annotations.NonNull Context context, @NonNull @org.jspecify.annotations.NonNull Glide glide, @NonNull @org.jspecify.annotations.NonNull Registry registry) {
         Log.d(TAG, "registerComponents: ");
-        OkHttpClient client = new OkHttpClient.Builder().addNetworkInterceptor(new ProgressInterceptor()).build();
+        OkHttpClient client = new OkHttpClient.Builder()
+                .proxySelector(HttpClientManager.INSTANCE.getProxySelector())
+                .addNetworkInterceptor(new ProgressInterceptor()).build();
         OkHttpUrlLoader.Factory factory = new OkHttpUrlLoader.Factory((Call.Factory) client);
         registry.replace(
                 GlideUrl.class,

@@ -113,6 +113,10 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:4.8.0"
     annotationProcessor ("com.github.bumptech.glide:compiler:4.8.0")
     implementation ("com.github.bumptech.glide:okhttp3-integration:4.8.0")
+
+    // 音频流也走 OkHttp,才能吃 HttpClientManager 里的本地代理
+    // (ExoPlayer 默认的 DefaultHttpDataSource 是 HttpURLConnection,不认 OkHttp 的代理设置)
+    implementation 'com.google.android.exoplayer:extension-okhttp:2.16.1'
 }
 
 class RoomSchemaArgProvider implements CommandLineArgumentProvider {
