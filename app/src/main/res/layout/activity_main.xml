@@ -149,6 +149,30 @@
                         android:textSize="20sp"/>
             </RelativeLayout>
             <RelativeLayout
+                    android:id="@+id/mineCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/item_bg">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="20dp"
+                        android:drawableStart="@drawable/ic_baseline_category_24"
+                        android:drawablePadding="16dp"
+                        android:drawableTint="@color/black"
+                        android:text="@string/category"
+                        android:textSize="16sp"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="20dp"
+                        android:text="&#8250;"
+                        android:textSize="20sp"/>
+            </RelativeLayout>
+            <RelativeLayout
                     android:id="@+id/mineDownload"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"

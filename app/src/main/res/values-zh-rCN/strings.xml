@@ -11,6 +11,15 @@
     <string name="mine">我的</string>
     <string name="review">我的评价</string>
     <string name="category">分类</string>
+    <string name="category_desc">声优 / 标签 / 社团</string>
+    <string name="group_playback">播放</string>
+    <string name="group_subtitle">字幕悬浮窗</string>
+    <string name="group_storage">下载与存储</string>
+    <string name="group_network">网络</string>
+    <string name="group_privacy">隐私与安全</string>
+    <string name="group_appearance">界面</string>
+    <string name="group_others">其他</string>
+    <string name="new_home_layout">新版首页布局</string>
     <string name="account">账户</string>
     <string name="works_layout">布局</string>
     <string name="list_layout">列表布局</string>

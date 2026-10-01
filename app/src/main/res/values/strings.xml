@@ -25,6 +25,15 @@
     <string name="mine">Mine</string>
     <string name="review">My review</string>
     <string name="category">Browse</string>
+    <string name="category_desc">Voice actor / tag / circle</string>
+    <string name="group_playback">Playback</string>
+    <string name="group_subtitle">Subtitle window</string>
+    <string name="group_storage">Download &amp; storage</string>
+    <string name="group_network">Network</string>
+    <string name="group_privacy">Privacy &amp; security</string>
+    <string name="group_appearance">Appearance</string>
+    <string name="group_others">Others</string>
+    <string name="new_home_layout">New home layout</string>
     <string name="account">Account</string>
     <string name="works_layout">Layout</string>
     <string name="list_layout">List layout</string>

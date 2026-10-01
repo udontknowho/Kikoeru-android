@@ -178,6 +178,9 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         binding.mineSettings.setOnClickListener {
             startActivity(Intent(this, MoreActivity::class.java))
         }
+        binding.mineCategory.setOnClickListener {
+            showCategorySheet()
+        }
 
         // 浮动歌词窗口按钮
         ibFloatLrcWindow.setOnClickListener {
@@ -511,12 +514,6 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
 
-        // 声优 / 标签 / 社团
-        menu.add(0, 25, 25, R.string.category).apply {
-            setIcon(R.drawable.ic_baseline_category_24)
-            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-        }
-
         // 搜索留在最右
         menu.add(0, 23, 23, R.string.search).apply {
             setIcon(R.drawable.ic_baseline_search_24)
@@ -558,10 +555,6 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         return when (item.itemId) {
             23 -> {
                 startActivity(Intent(this, SearchActivity::class.java))
-                true
-            }
-            25 -> {
-                showCategorySheet()
                 true
             }
             else -> super.onOptionsItemSelected(item)

@@ -41,7 +41,7 @@
         <activity
                 android:name=".MoreActivity"
                 android:exported="true"
-                android:label="@string/more"/>
+                android:label="@string/action_settings"/>
         <activity
                 android:name=".LoginAccountActivity"
                 android:exported="true">

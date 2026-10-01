@@ -75,6 +75,19 @@
         <item name="titleTextAppearance">@style/TextAppearance.Material3.TitleMedium</item>
     </style>
 
+    <!-- 设置页里每个大类的小标题 -->
+    <style name="Theme.Kikoeru.SettingsGroup">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:paddingTop">18dp</item>
+        <item name="android:paddingBottom">6dp</item>
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="Theme.Kikoeru.TextInputStyle" parent="Theme.MaterialComponents.Light">
         <item name="android:textColor">@color/black</item>
     </style>
