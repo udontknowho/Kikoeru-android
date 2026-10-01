@@ -39,6 +39,24 @@ object Api {
     private var sort = 1
     private var order = "id"
 
+    /**
+     * 不需要账号的站点（个人库，只有游客模式）。
+     * 这些实例的差别：/api/auth/me 的 POST 会被 Cloudflare 拦、排序字段叫 created_at、搜索用查询参数。
+     */
+    private val GUEST_HOSTS = listOf("asmr.unikon.art")
+
+    @JvmStatic
+    fun isGuestHost(host: String?): Boolean =
+        !host.isNullOrEmpty() && GUEST_HOSTS.any { host.contains(it, ignoreCase = true) }
+
+    /** 当前连接的服务器地址 */
+    @JvmStatic
+    fun currentHost(): String = HOST
+
+    /** 排序字段：这台实例不认 create_date（直接 400），它叫 created_at */
+    private fun orderParam(): String =
+        if (isGuestHost(HOST) && order == "create_date") "created_at" else order
+
     private val okHttpClient: OkHttpClient = HttpClientManager.getPacEnabledClient()
 
     @JvmStatic
@@ -181,14 +199,14 @@ object Api {
     @JvmStatic
     fun doGetWorks(page: Int, callback: JSONObjectCallback?) {
         // seed 参数对 /api/works 无效（实测换 seed 结果一模一样），“换一批”靠换页码，见 MainViewModel.shuffleStart()
-        val url = "${HOST}/api/works?order=${order}&sort=${makeSort()}&page=${page}&seed=35&subtitle=${subtitle}"
+        val url = "${HOST}/api/works?order=${orderParam()}&sort=${makeSort()}&page=${page}&seed=35&subtitle=${subtitle}"
         callback?.let {
             okhttpGetJsonObject(url,it)
         }
     }
     @JvmStatic
     fun doGetWorksByTag(page: Int, tagId: Int, callback: JSONObjectCallback?) {
-        val url = "${HOST}/api/tags/${tagId}/works?order=${order}&sort=${makeSort()}&page=${page}&seed=21&subtitle=${subtitle}"
+        val url = "${HOST}/api/tags/${tagId}/works?order=${orderParam()}&sort=${makeSort()}&page=${page}&seed=21&subtitle=${subtitle}"
         callback?.let {
             okhttpGetJsonObject(url,it)
         }
@@ -197,7 +215,7 @@ object Api {
     @JvmStatic
     fun doGetWorkByVa(page: Int, vaId: String, callback: JSONObjectCallback?) {
 //        http://localhost:8888/api/vas/2b5e7ab5-d994-5491-a53c-f1b6ae562d0e/works?order=price&sort=desc&page=1&seed=68
-        val url = HOST +  "/api/vas/${vaId}/works?order=${order}&sort=${makeSort()}&page=${page}&seed=21&subtitle=${subtitle}"
+        val url = HOST +  "/api/vas/${vaId}/works?order=${orderParam()}&sort=${makeSort()}&page=${page}&seed=21&subtitle=${subtitle}"
         callback?.let {
             okhttpGetJsonObject(url,it)
         }
@@ -206,7 +224,7 @@ object Api {
     @JvmStatic
     fun doGetWorkByCircles(page: Int, circlesId: Long, callback: JSONObjectCallback?) {
         //    http://localhost:8980/api/circles/54978/works?order=release&sort=desc&page=1&seed=59
-        val url = "${HOST}/api/circles/${circlesId}/works?order=${order}&sort=${makeSort()}&page=${page}&seed=21&subtitle=${subtitle}"
+        val url = "${HOST}/api/circles/${circlesId}/works?order=${orderParam()}&sort=${makeSort()}&page=${page}&seed=21&subtitle=${subtitle}"
         callback?.let {
             okhttpGetJsonObject(url,it)
         }
@@ -238,8 +256,13 @@ object Api {
 
     @JvmStatic
     fun doGetWork(keyword: String, page: Int, callback: JSONObjectCallback?) {
-//        http://localhost:8888/api/search/RJ381400?order=release&sort=desc&page=1&seed=18
-        val url = "${HOST}/api/search/${keyword}?order=${order}&sort=${makeSort()}&page=${page}&seed=18&subtitle=0"
+        // 免账号实例的搜索是查询参数形式：/api/search?keyword=xxx（路径形式会 404）
+        val url = if (isGuestHost(HOST)) {
+            val kw = java.net.URLEncoder.encode(keyword, "UTF-8")
+            "${HOST}/api/search?keyword=${kw}&order=${orderParam()}&sort=${makeSort()}&page=${page}"
+        } else {
+            "${HOST}/api/search/${keyword}?order=${orderParam()}&sort=${makeSort()}&page=${page}&seed=18&subtitle=0"
+        }
         callback?.let {
             okhttpGetJsonObject(url,it)
         }

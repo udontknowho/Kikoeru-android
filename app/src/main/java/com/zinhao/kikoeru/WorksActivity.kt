@@ -143,6 +143,11 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
 
         // 收藏 tab 默认选“我的评价”
         binding.chipGroup.check(R.id.chipReview)
+
+        // 免账号的实例(个人库)没有“我的评价/进度”，把它们收起来
+        if (Api.isGuestHost(Api.currentHost())) {
+            binding.bottomNav.menu.findItem(R.id.nav_favourites)?.isVisible = false
+        }
     }
 
     // ==================== 监听器设置 ====================

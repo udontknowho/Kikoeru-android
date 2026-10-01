@@ -36,6 +36,26 @@ public class UserRepository {
     }
 
     /**
+     * 免账号站点登录：本地存一个 guest 用户就行，不走 /api/auth/me
+     * （这类个人库的 POST 会被 Cloudflare 挡成 HTML，而且本来也不需要 token）
+     */
+    public void saveGuestUser(String host) {
+        User user = new User();
+        user.setName("guest");
+        user.setPassword("");
+        user.setHost(host);
+        user.setToken("");
+        user.setLastUpdateTime(System.currentTimeMillis());
+        App.getInstance().insertUser(user, new Runnable() {
+            @Override
+            public void run() {
+                Api.init("", host);
+                App.getInstance().setCurrentUserId(user.getId());
+            }
+        });
+    }
+
+    /**
      * 用户登录
      */
     public LiveData<Result<LoginResponse>> login(String username, String password, String host) {

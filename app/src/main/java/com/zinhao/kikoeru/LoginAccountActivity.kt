@@ -2,6 +2,8 @@ package com.zinhao.kikoeru
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -11,6 +13,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputLayout
 import com.zinhao.kikoeru.databinding.ActivityLoginAccountBinding
 import com.zinhao.kikoeru.viewmodel.LoginViewModel
@@ -46,12 +49,34 @@ class LoginAccountActivity : BaseActivity() {
         btSignIn!!.setOnClickListener(View.OnClickListener { v: View? ->
             // 更新 ViewModel 中的值
             updateViewModelInputs()
-            viewModel!!.login()
+            if (Api.isGuestHost(currentHostText())) {
+                // 免账号站点：直接建本地 guest 用户，不走登录接口
+                viewModel!!.loginWithoutAccount()
+            } else {
+                viewModel!!.login()
+            }
         })
 
         btGuest!!.setOnClickListener(View.OnClickListener { v: View? ->
-            viewModel!!.loginAsGuest()
+            updateViewModelInputs()
+            if (Api.isGuestHost(currentHostText())) {
+                viewModel!!.loginWithoutAccount()
+            } else {
+                viewModel!!.loginAsGuest()
+            }
         })
+    }
+
+    private fun currentHostText(): String =
+        tilServer?.editText?.text?.toString()?.trim() ?: ""
+
+    /** 免账号站点：账号/密码框直接禁用，登录按钮换成“进入” */
+    private fun applyHostMode(host: String) {
+        val guestOnly = Api.isGuestHost(host)
+        tilUser?.isEnabled = !guestOnly
+        tilPassword?.isEnabled = !guestOnly
+        btSignIn?.text =
+            if (guestOnly) getString(R.string.user_enter) else getString(R.string.user_sign_in)
     }
 
     private fun observeViewModel() {
@@ -89,6 +114,19 @@ class LoginAccountActivity : BaseActivity() {
 
         if (etUser == null || etPassword == null || etServer == null) return
 
+        // 服务器下拉：两个内置站点；想用别的地址直接手上改就行（等于另存一个）
+        if (etServer is MaterialAutoCompleteTextView) {
+            etServer.setSimpleItems(presetHosts)
+        }
+        etServer.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                applyHostMode(s?.toString() ?: "")
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
+
         // 设置默认值
         val currentUser = App.getInstance().currentUser()
         if (currentUser != null) {
@@ -100,6 +138,7 @@ class LoginAccountActivity : BaseActivity() {
             etPassword.setText("guest")
             etServer.setText(Api.REMOTE_HOST)
         }
+        applyHostMode(etServer.getText().toString())
     }
 
     private fun updateViewModelInputs() {
@@ -150,5 +189,11 @@ class LoginAccountActivity : BaseActivity() {
 
     companion object {
         private const val TAG = "LoginAccountActivity"
+
+        /** 内置的站点：有一个要账号，有一个免账号 */
+        private val presetHosts = arrayOf(
+            "https://api.asmr.one",
+            "https://asmr.unikon.art"
+        )
     }
 }

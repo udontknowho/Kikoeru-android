@@ -142,6 +142,24 @@ public class LoginViewModel extends ViewModel {
     }
 
     /**
+     * 免账号站点：直接建一个本地 guest 用户，不走登录接口
+     */
+    public void loginWithoutAccount() {
+        String server = host.getValue();
+        if (server == null || server.trim().isEmpty()) {
+            errorMessage.setValue("请输入服务器地址");
+            return;
+        }
+        String hostUrl = server.trim();
+        if (!hostUrl.startsWith("http://") && !hostUrl.startsWith("https://")) {
+            hostUrl = "https://" + hostUrl;
+        }
+        errorMessage.setValue(null);
+        userRepository.saveGuestUser(hostUrl);
+        loginSuccess.setValue(true);
+    }
+
+    /**
      * 使用访客登录
      */
     public void loginAsGuest() {

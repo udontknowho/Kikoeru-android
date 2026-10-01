@@ -146,7 +146,10 @@ class UserSwitchActivity : BaseActivity() {
                     holder.tvName.setText(user.getName())
                 }
 
-                holder.tvServer.setText(user.getHost())
+                holder.tvServer.setText(
+                    if (Api.isGuestHost(user.getHost())) user.getHost() + "  ·  " + getString(R.string.user_enter)
+                    else user.getHost()
+                )
                 holder.ibDelete.setOnClickListener(object : View.OnClickListener {
                     override fun onClick(v: View?) {
                         notifyItemRemoved(position)
@@ -166,6 +169,11 @@ class UserSwitchActivity : BaseActivity() {
                 })
                 holder.ibRefresh.setOnClickListener(object : View.OnClickListener {
                     override fun onClick(v: View?) {
+                        // 免账号站点没有 token 可刷
+                        if (Api.isGuestHost(user.getHost())) {
+                            Toast.makeText(this@UserSwitchActivity, R.string.guest_no_token, Toast.LENGTH_SHORT).show()
+                            return
+                        }
                         refreshUser = user
                         doGetToken(user.getName(), user.getPassword(), user.getHost(), refreshTokenCallback)
                     }
