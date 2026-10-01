@@ -170,10 +170,16 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
             }
         }
 
-        // 下拉刷新：首页“换一批”（随机页码，服务端的 seed 没用），收藏 tab 就是普通重拉
+        // 下拉刷新：首页“换一批”（个人库用服务端随机排序，asmr.one 只能换随机页码），收藏 tab 就是普通重拉
         binding.swipe.setOnRefreshListener {
             if (currentTab == TAB_HOME) {
-                viewModel.shuffleStart()
+                if (Api.supportsRandomOrder()) {
+                    Api.useRandomOrder()
+                    viewModel.clearWorks()
+                    invalidateOptionsMenu()   // 排序菜单上的标记跟着变
+                } else {
+                    viewModel.shuffleStart()  // 内部已经 clearWorks
+                }
             } else {
                 viewModel.clearWorks()
             }
@@ -530,6 +536,10 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
             add(3, 18, 18, sortItemTitle(R.string.rj_number, "id"))
             add(3, 19, 19, sortItemTitle(R.string.prize, "price"))
             add(3, 20, 20, sortItemTitle(R.string.last_in_lib, "create_date"))
+            // 个人库那几家支持服务端真随机
+            if (Api.supportsRandomOrder()) {
+                add(3, 21, 21, sortItemTitle(R.string.sort_random, "random"))
+            }
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
 
@@ -562,6 +572,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
                     18 -> { setOrder("id"); needUpdate = true }
                     19 -> { setOrder("price"); needUpdate = true }
                     20 -> { setOrder("create_date"); needUpdate = true }
+                    21 -> { setOrder("random"); needUpdate = true }
                 }
                 if (needUpdate) {
                     invalidateOptionsMenu()   // 让排序标题上的箭头跟着变

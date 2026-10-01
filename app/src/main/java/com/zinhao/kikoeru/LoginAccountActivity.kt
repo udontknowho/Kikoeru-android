@@ -10,7 +10,9 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Filter
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
@@ -27,6 +29,8 @@ class LoginAccountActivity : BaseActivity() {
     private var btSignIn: Button? = null
     private var btGuest: Button? = null
     private var btSignUp: Button? = null
+    private var swProxy: SwitchCompat? = null
+    private var tvGuestHint: TextView? = null
 
     private var viewModel: LoginViewModel? = null
     private lateinit var viewBinding: ActivityLoginAccountBinding
@@ -73,27 +77,26 @@ class LoginAccountActivity : BaseActivity() {
     private fun currentHostText(): String =
         tilServer?.editText?.text?.toString()?.trim() ?: ""
 
-    /** 免账号/游客站点：账号密码框禁用，登录按钮换成对应文案 */
+    /** 免账号/游客站点：把账号密码两个框整块收走（置灰太丑），换一行说明 */
     private fun applyHostMode(host: String) {
-        when (Api.hostKind(host)) {
+        val kind = Api.hostKind(host)
+        val hideAccount = kind != Api.HostKind.NORMAL
+        tilUser?.visibility = if (hideAccount) View.GONE else View.VISIBLE
+        tilPassword?.visibility = if (hideAccount) View.GONE else View.VISIBLE
+        tvGuestHint?.visibility = if (hideAccount) View.VISIBLE else View.GONE
+        when (kind) {
             Api.HostKind.NO_TOKEN -> {
-                tilUser?.isEnabled = false
-                tilPassword?.isEnabled = false
                 btSignIn?.text = getString(R.string.user_enter)
             }
 
             Api.HostKind.GUEST_TOKEN -> {
                 // 这种库只认游客账号，直接把 guest/guest 填好免得输错
-                tilUser?.isEnabled = false
-                tilPassword?.isEnabled = false
                 tilUser?.editText?.setText("guest")
                 tilPassword?.editText?.setText("guest")
                 btSignIn?.text = getString(R.string.user_enter_guest)
             }
 
             else -> {
-                tilUser?.isEnabled = true
-                tilPassword?.isEnabled = true
                 btSignIn?.text = getString(R.string.user_sign_in)
             }
         }
@@ -219,6 +222,15 @@ class LoginAccountActivity : BaseActivity() {
         btSignIn = viewBinding.button2
         btGuest = viewBinding.button4
         btSignUp = viewBinding.button3
+        swProxy = viewBinding.swProxy
+        tvGuestHint = viewBinding.guestHint
+
+        // 代理开关：默认读设置里的值；改完作废一次探测缓存（跟设置页一致）
+        swProxy?.isChecked = App.getInstance().getValue(App.CONFIG_PROXY_ENABLED, 1L) == 1L
+        swProxy?.setOnCheckedChangeListener { _, isChecked ->
+            App.getInstance().setValue(App.CONFIG_PROXY_ENABLED, if (isChecked) 1L else 0L)
+            com.zinhao.kikoeru.network.HttpClientManager.resetProxyCache()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

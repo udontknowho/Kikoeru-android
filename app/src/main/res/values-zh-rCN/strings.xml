@@ -28,6 +28,8 @@
     <string name="tag">标签</string>
     <string name="local_works">本地缓存</string>
     <string name="sort">排序</string>
+    <string name="sort_random">随机</string>
+    <string name="guest_login_hint">这个站点不需要账号，直接点下面的按钮进入</string>
     <string name="release_date">发布时间</string>
     <string name="rj_number">RJ号码</string>
     <string name="prize">价格</string>

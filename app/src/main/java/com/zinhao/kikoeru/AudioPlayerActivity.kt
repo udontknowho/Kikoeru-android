@@ -283,7 +283,9 @@ class AudioPlayerActivity : BaseActivity(), ServiceConnection, MusicChangeListen
         val index = ctrlBinder?.lrc?.currentIndex ?: return
         if (index < 0 || index == lastScrolledIndex) return
         lastScrolledIndex = index
-        manger.scrollToPosition(index)
+        // 把当前这句拨到屏幕中间（当前行是 36sp 大字号，减一半大致居中）
+        val middle = (recyclerView!!.height / 2) - (resources.displayMetrics.density * 22).toInt()
+        manger.scrollToPositionWithOffset(index, middle.coerceAtLeast(0))
     }
 
     override fun onLrcChange(lrc: Lrc?) {

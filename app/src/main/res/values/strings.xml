@@ -42,6 +42,8 @@
     <string name="tag">Tag</string>
     <string name="local_works">Cache</string>
     <string name="sort">Sort</string>
+    <string name="sort_random">Random</string>
+    <string name="guest_login_hint">This server needs no account — just tap the button below</string>
     <string name="release_date">Release date</string>
     <string name="rj_number">RJ number</string>
     <string name="prize">Prize</string>

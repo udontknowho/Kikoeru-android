@@ -39,9 +39,11 @@ object Api {
     private var sort = 1
     private var order = "id"
 
-    /** 内置站点（登录页下拉、账号页「内置站点」共用） */
+    /** 内置站点（登录页下拉、账号页「内置站点」共用）；200/300 是 asmr.one 的备用 API 域名 */
     val BUILTIN_HOSTS = arrayOf(
         "https://api.asmr.one",
+        "https://api.asmr-200.com",
+        "https://api.asmr-300.com",
         "https://asmr.unikon.art",
         "https://asmr.emoe.top",
         "https://asmr.homes"
@@ -99,6 +101,17 @@ object Api {
             ""
         )
         return h.trimEnd('/')
+    }
+
+    /** 个人库那一类实例支持服务端真随机排序（asmr.one 没有这个值） */
+    @JvmStatic
+    fun supportsRandomOrder(): Boolean = isPersonalHost(HOST)
+
+    /** 下拉刷新“换一批”：个人库直接用服务端的 random 排序 */
+    @JvmStatic
+    fun useRandomOrder() {
+        order = "random"
+        App.getInstance().setValue(App.CONFIG_ORDER, "random")
     }
 
     /** 排序字段：个人库实例不认 create_date（直接 400），它叫 created_at */

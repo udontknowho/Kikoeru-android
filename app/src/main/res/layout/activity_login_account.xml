@@ -71,6 +71,41 @@
                     android:hint="Kikoeru server host" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- 免账号/游客站点时显示，替代那两个禁用的输入框 -->
+        <TextView
+                android:id="@+id/guestHint"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/guest_login_hint"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+        <!-- 登录页就能开关代理：代理没开就登不进去的情况太多了 -->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="14dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+            <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/proxy_enabled"
+                    android:textSize="15sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swProxy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+
         <Button
                 android:id="@+id/button2"
                 android:layout_width="wrap_content"
