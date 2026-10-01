@@ -60,6 +60,11 @@
     <string name="proxy_addr">Proxy address</string>
     <string name="proxy_addr_invalid">Use host:port, e.g. 127.0.0.1:7890</string>
     <string name="lrc_text_size">Subtitle size</string>
+    <string name="lrc_text_color">Subtitle color</string>
+    <string name="lrc_text_alpha">Subtitle opacity</string>
+    <string name="lrc_text_bg">Subtitle background</string>
+    <string name="lrc_bg_none">None</string>
+    <string name="lrc_size_invalid">Size must be 8-120</string>
     <string name="savePath">Save position</string>
     <string name="saveAtExternal">Save at external storage</string>
     <string name="search">Search</string>

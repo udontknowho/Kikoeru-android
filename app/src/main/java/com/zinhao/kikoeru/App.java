@@ -6,10 +6,12 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.Room;
@@ -40,11 +42,53 @@ public class App extends Application implements Application.ActivityLifecycleCal
     public static final String CONFIG_PROXY_ENABLED = "proxy_enabled";
     public static final String CONFIG_PROXY_ADDR = "proxy_addr";
     public static final String CONFIG_LRC_TEXT_SIZE = "lrc_text_size";
+    public static final String CONFIG_LRC_TEXT_COLOR = "lrc_text_color";
+    public static final String CONFIG_LRC_TEXT_ALPHA = "lrc_text_alpha";
+    public static final String CONFIG_LRC_BG_COLOR = "lrc_bg_color";
+    public static final String CONFIG_LRC_BG_ALPHA = "lrc_bg_alpha";
     public static final String DEFAULT_PROXY_ADDR = "127.0.0.1:7890";
 
     /** 桌面字幕字号(sp),设置页里可调 */
     public int getLrcTextSize() {
         return (int) getValue(CONFIG_LRC_TEXT_SIZE, 36L);
+    }
+
+    /** 字幕文字颜色(RGB,透明度单独存) */
+    public int getLrcTextColor() {
+        return (int) getValue(CONFIG_LRC_TEXT_COLOR, 0xFFFFFFL);
+    }
+
+    /** 字幕文字透明度 0~255 */
+    public int getLrcTextAlpha() {
+        return (int) getValue(CONFIG_LRC_TEXT_ALPHA, 255L);
+    }
+
+    /** 字幕背景色(RGB),透明度为 0 时就是没背景 */
+    public int getLrcBgColor() {
+        return (int) getValue(CONFIG_LRC_BG_COLOR, 0x000000L);
+    }
+
+    public int getLrcBgAlpha() {
+        return (int) getValue(CONFIG_LRC_BG_ALPHA, 0L);
+    }
+
+    /**
+     * 把桌面字幕的样式一次应用上去(字号/颜色/透明度/背景)。
+     * 每次刷新字幕行时调一遍,所以设置改完下一句就生效,不用把 Activity 和 Service 连起来。
+     * ponytail: 背景 drawable 每句重建一个,量级是几秒一个对象,不值得为此做缓存
+     */
+    public void styleLrcFloatText(TextView tv) {
+        tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, getLrcTextSize());
+        tv.setTextColor((getLrcTextAlpha() << 24) | getLrcTextColor());
+        int bgAlpha = getLrcBgAlpha();
+        if (bgAlpha <= 0) {
+            tv.setBackground(null);
+            return;
+        }
+        GradientDrawable background = new GradientDrawable();
+        background.setColor((bgAlpha << 24) | getLrcBgColor());
+        background.setCornerRadius(getResources().getDisplayMetrics().density * 12f);
+        tv.setBackground(background);
     }
 
 

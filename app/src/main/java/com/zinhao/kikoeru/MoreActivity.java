@@ -1,6 +1,7 @@
 package com.zinhao.kikoeru;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -40,6 +41,12 @@ public class MoreActivity extends BaseActivity implements CompoundButton.OnCheck
     private TextView tvProxyAddr;
     private View itemLrcSize;
     private TextView tvLrcSize;
+    private View itemLrcColor;
+    private TextView tvLrcColor;
+    private View itemLrcAlpha;
+    private TextView tvLrcAlpha;
+    private View itemLrcBg;
+    private TextView tvLrcBg;
     private ActivityMoreBinding viewBinding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +149,37 @@ public class MoreActivity extends BaseActivity implements CompoundButton.OnCheck
             @Override
             public void onClick(View v) {
                 showLrcSizeDialog();
+            }
+        });
+
+        itemLrcColor = viewBinding.lrcColor;
+        tvLrcColor = viewBinding.tvLrcColor;
+        tvLrcColor.setText(String.format(java.util.Locale.US, "#%06X", App.getInstance().getLrcTextColor()));
+        tvLrcColor.setTextColor(0xFF000000 | App.getInstance().getLrcTextColor());
+        itemLrcColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLrcColorDialog();
+            }
+        });
+
+        itemLrcAlpha = viewBinding.lrcAlpha;
+        tvLrcAlpha = viewBinding.tvLrcAlpha;
+        tvLrcAlpha.setText(App.getInstance().getLrcTextAlpha() * 100 / 255 + "%");
+        itemLrcAlpha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLrcAlphaDialog();
+            }
+        });
+
+        itemLrcBg = viewBinding.lrcBg;
+        tvLrcBg = viewBinding.tvLrcBg;
+        tvLrcBg.setText(bgLabel(App.getInstance().getLrcBgColor(), App.getInstance().getLrcBgAlpha()));
+        itemLrcBg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLrcBgDialog();
             }
         });
 
@@ -264,28 +302,120 @@ public class MoreActivity extends BaseActivity implements CompoundButton.OnCheck
         }
     }
 
-    /** 桌面字幕字号 */
+    /** 桌面字幕字号(自定义,8~120) */
     private void showLrcSizeDialog() {
-        final int[] sizes = {20, 26, 31, 36, 42, 50};
-        final String[] items = new String[sizes.length];
+        final EditText input = new EditText(this);
+        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+        input.setText(String.valueOf(App.getInstance().getLrcTextSize()));
+        input.setSelection(input.getText().length());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.RoundedAlertDialog);
+        builder.setTitle(R.string.lrc_text_size);
+        builder.setView(input);
+        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                int size;
+                try {
+                    size = Integer.parseInt(input.getText().toString().trim());
+                } catch (NumberFormatException e) {
+                    size = -1;
+                }
+                if (size < 8 || size > 120) {
+                    Toast.makeText(MoreActivity.this, R.string.lrc_size_invalid, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                App.getInstance().setValue(App.CONFIG_LRC_TEXT_SIZE, (long) size);
+                tvLrcSize.setText(size + "sp");
+            }
+        });
+        builder.setNegativeButton(android.R.string.cancel, null);
+        builder.show();
+    }
+
+    /** 桌面字幕颜色 */
+    private void showLrcColorDialog() {
+        final int[] colors = {0xFFFFFF, 0x000000, 0xFFD54F, 0x8EE8E8, 0xFFB6C1, 0x6FCF97, 0xFF8C42, 0xB693E0};
+        final String[] items = new String[colors.length];
         int checked = 0;
-        int current = App.getInstance().getLrcTextSize();
-        for (int i = 0; i < sizes.length; i++) {
-            items[i] = sizes[i] + "sp";
-            if (sizes[i] == current) {
+        int current = App.getInstance().getLrcTextColor();
+        for (int i = 0; i < colors.length; i++) {
+            items[i] = String.format(java.util.Locale.US, "#%06X", colors[i]);
+            if (colors[i] == current) {
                 checked = i;
             }
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.RoundedAlertDialog);
-        builder.setTitle(R.string.lrc_text_size);
-        builder.setSingleChoiceItems(items, checked, new android.content.DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.lrc_text_color);
+        builder.setSingleChoiceItems(items, checked, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(android.content.DialogInterface dialog, int which) {
-                App.getInstance().setValue(App.CONFIG_LRC_TEXT_SIZE, (long) sizes[which]);
-                tvLrcSize.setText(items[which]);
+            public void onClick(DialogInterface dialog, int which) {
+                App.getInstance().setValue(App.CONFIG_LRC_TEXT_COLOR, (long) colors[which]);
+                tvLrcColor.setText(items[which]);
+                tvLrcColor.setTextColor(0xFF000000 | colors[which]);
                 dialog.dismiss();
             }
         });
         builder.show();
+    }
+
+    /** 桌面字幕透明度 */
+    private void showLrcAlphaDialog() {
+        final int[] percents = {100, 80, 60, 40, 20};
+        final String[] items = new String[percents.length];
+        int checked = 0;
+        int current = App.getInstance().getLrcTextAlpha();
+        for (int i = 0; i < percents.length; i++) {
+            items[i] = percents[i] + "%";
+            if (percents[i] * 255 / 100 == current) {
+                checked = i;
+            }
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.RoundedAlertDialog);
+        builder.setTitle(R.string.lrc_text_alpha);
+        builder.setSingleChoiceItems(items, checked, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                App.getInstance().setValue(App.CONFIG_LRC_TEXT_ALPHA, (long) (percents[which] * 255 / 100));
+                tvLrcAlpha.setText(items[which]);
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    /** 桌面字幕背景:颜色和它的透明度合成一项 */
+    private void showLrcBgDialog() {
+        final int[] rgbs = {0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0xFFFFFF};
+        final int[] alphas = {0, 51, 102, 153, 204, 102};
+        final String[] items = new String[rgbs.length];
+        int checked = 0;
+        int currentRgb = App.getInstance().getLrcBgColor();
+        int currentAlpha = App.getInstance().getLrcBgAlpha();
+        for (int i = 0; i < rgbs.length; i++) {
+            items[i] = i == 0 ? getString(R.string.lrc_bg_none) : bgLabel(rgbs[i], alphas[i]);
+            boolean sameColor = rgbs[i] == currentRgb;
+            if (i == 0 ? currentAlpha <= 0 : sameColor && Math.abs(alphas[i] - currentAlpha) < 8) {
+                checked = i;
+            }
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.RoundedAlertDialog);
+        builder.setTitle(R.string.lrc_text_bg);
+        builder.setSingleChoiceItems(items, checked, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                App.getInstance().setValue(App.CONFIG_LRC_BG_COLOR, (long) rgbs[which]);
+                App.getInstance().setValue(App.CONFIG_LRC_BG_ALPHA, (long) alphas[which]);
+                tvLrcBg.setText(items[which]);
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    private String bgLabel(int rgb, int alpha) {
+        if (alpha <= 0) {
+            return getString(R.string.lrc_bg_none);
+        }
+        return String.format(java.util.Locale.US, "#%06X · %d%%", rgb, alpha * 100 / 255);
     }
 }

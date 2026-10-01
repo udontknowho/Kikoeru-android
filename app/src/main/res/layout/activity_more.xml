@@ -269,6 +269,113 @@
             </RelativeLayout>
 
             <RelativeLayout
+                    android:id="@+id/lrcColor"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/item_bg">
+
+                <TextView
+                        android:id="@+id/textView21"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="20dp"
+                        android:drawableStart="@drawable/ic_baseline_widgets_24"
+                        android:drawableTint="@color/black"
+                        android:gravity="center"
+                        android:text="@string/lrc_text_color"
+                        android:textSize="16sp" />
+
+                <TextView
+                        android:id="@+id/tvLrcColor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="20dp"
+                        android:text="#FFFFFF"
+                        android:textSize="14sp" />
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/gray_80" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                    android:id="@+id/lrcAlpha"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/item_bg">
+
+                <TextView
+                        android:id="@+id/textView22"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="20dp"
+                        android:drawableStart="@drawable/ic_baseline_widgets_24"
+                        android:drawableTint="@color/black"
+                        android:gravity="center"
+                        android:text="@string/lrc_text_alpha"
+                        android:textSize="16sp" />
+
+                <TextView
+                        android:id="@+id/tvLrcAlpha"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="20dp"
+                        android:text="100%"
+                        android:textColor="@color/gray"
+                        android:textSize="14sp" />
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/gray_80" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                    android:id="@+id/lrcBg"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/item_bg">
+
+                <TextView
+                        android:id="@+id/textView23"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="20dp"
+                        android:drawableStart="@drawable/ic_baseline_widgets_24"
+                        android:drawableTint="@color/black"
+                        android:gravity="center"
+                        android:text="@string/lrc_text_bg"
+                        android:textSize="16sp" />
+
+                <TextView
+                        android:id="@+id/tvLrcBg"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="20dp"
+                        android:text="@string/lrc_bg_none"
+                        android:textColor="@color/gray"
+                        android:textSize="14sp" />
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/gray_80" />
+            </RelativeLayout>
+
+            <RelativeLayout
                     android:id="@+id/license"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"

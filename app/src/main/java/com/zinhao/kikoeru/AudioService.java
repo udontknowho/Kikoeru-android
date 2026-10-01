@@ -28,7 +28,6 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.*;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -581,11 +580,11 @@ public class AudioService extends Service {
                         if (currentLrcRow != lrcRow) {
                             currentLrcRow = lrcRow;
                             if (lrcView instanceof TextView) {
-                                // 字号每次刷字幕时读一遍设置,这样设置页改完下一句就生效,
-                                // 不用为了一个字号把 Activity 和 Service 连起来
-                                ((TextView) lrcView).setTextSize(TypedValue.COMPLEX_UNIT_SP,
-                                        App.getInstance().getLrcTextSize());
-                                ((TextView) lrcView).setText(currentLrcRow.content);
+                                // 字号/颜色/透明度/背景每次刷字幕时读一遍设置,
+                                // 所以设置页改完下一句就生效,不用把 Activity 和 Service 连起来
+                                TextView lrcTextView = (TextView) lrcView;
+                                App.getInstance().styleLrcFloatText(lrcTextView);
+                                lrcTextView.setText(currentLrcRow.content);
                             }
                             lrcRowChangeListeners.forEach(new Consumer<LrcRowChangeListener>() {
                                 @Override
