@@ -75,8 +75,20 @@ object Api {
             return
         }
         Api.order = order
+        // 换排序维度时方向回到默认（倒序）。
+        // 不重置的话会一直停在之前翻出来的升序上，看起来就像“回不到默认”。
+        sort = 0
+        App.getInstance().setValue(App.CONFIG_SORT, sort.toLong())
         App.getInstance().setValue(App.CONFIG_ORDER, order)
     }
+
+    /** 当前排序维度，给菜单显示用 */
+    @JvmStatic
+    fun currentOrder(): String = order
+
+    /** 当前是否升序（默认倒序） */
+    @JvmStatic
+    fun isAscending(): Boolean = sort == 1
 
     @JvmStatic
     fun setSubtitle(subtitle: Int) {

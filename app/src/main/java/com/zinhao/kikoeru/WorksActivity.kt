@@ -507,10 +507,11 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
 
         val sortMenu = menu.addSubMenu(0, 16, 16, R.string.sort).apply {
             setIcon(R.drawable.ic_baseline_sort_24)
-            add(3, 17, 17, R.string.release_date)
-            add(3, 18, 18, R.string.rj_number)
-            add(3, 19, 19, R.string.prize)
-            add(3, 20, 20, R.string.last_in_lib)
+            // 当前排序维度后面拼上箭头，免得看不出现在是按什么排、哪种方向
+            add(3, 17, 17, sortItemTitle(R.string.release_date, "release"))
+            add(3, 18, 18, sortItemTitle(R.string.rj_number, "id"))
+            add(3, 19, 19, sortItemTitle(R.string.prize, "price"))
+            add(3, 20, 20, sortItemTitle(R.string.last_in_lib, "create_date"))
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
 
@@ -545,6 +546,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
                     20 -> { setOrder("create_date"); needUpdate = true }
                 }
                 if (needUpdate) {
+                    invalidateOptionsMenu()   // 让排序标题上的箭头跟着变
                     viewModel.clearWorks()
                     viewModel.loadFromNetwork()
                 }
@@ -562,6 +564,13 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
     }
 
     // ==================== Activity 结果 ====================
+
+    /** 排序菜单项标题：当前那一项后面带方向箭头 */
+    private fun sortItemTitle(titleRes: Int, order: String): String {
+        val title = getString(titleRes)
+        if (Api.currentOrder() != order) return title
+        return title + if (Api.isAscending()) "  ↑" else "  ↓"
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
