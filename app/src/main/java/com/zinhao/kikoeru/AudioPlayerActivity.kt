@@ -146,11 +146,9 @@ class AudioPlayerActivity : BaseActivity(), ServiceConnection, MusicChangeListen
         sleepMenu!!.setOnItemClickListener(AdapterView.OnItemClickListener { parent: AdapterView<*>?, view: View?, position: Int, id: Long ->
             sleepMenu!!.dismiss()
             val minutes= 30*(position+1)
-            if(BuildConfig.DEBUG){
-                ctrlBinder?.stopAfterMinutes(minutes/30)
-            }else{
-                ctrlBinder?.stopAfterMinutes(minutes)
-            }
+            // 原来这里 debug 包会把时间除以 30(30 分钟变成 1 分钟):那是开发时快速验证用的,
+            // 但 debug 包是实际要用的包,留着就成了"定时停止不准"。
+            ctrlBinder?.stopAfterMinutes(minutes)
             Toast.makeText(this, "will stop after ${minutes} minutes", Toast.LENGTH_LONG).show()
         })
     }
