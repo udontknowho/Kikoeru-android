@@ -196,8 +196,10 @@ public class AudioService extends Service {
         // 音频流走 OkHttp,才能吃 HttpClientManager 里的本地代理。
         // ExoPlayer 默认的 DefaultHttpDataSource 内部是 HttpURLConnection,不认 OkHttp 的代理设置,
         // 所以光给 API 请求加代理的话,列表能刷出来、音频照样卡死。
+        // 注意用 getStreamClient 而不是 getPacEnabledClient:后者带 30 秒的 callTimeout,
+        // 那个额度把"读响应体"也算进去,会把长音频流每半分钟掐断一次。
         mediaPlayer = new ExoPlayer.Builder(this, new DefaultMediaSourceFactory(
-                new OkHttpDataSource.Factory(HttpClientManager.INSTANCE.getPacEnabledClient()))).build();
+                new OkHttpDataSource.Factory(HttpClientManager.INSTANCE.getStreamClient()))).build();
         mediaPlayer.addListener(new Player.Listener() {
             @Override
             public void onPlayerError(PlaybackException error) {

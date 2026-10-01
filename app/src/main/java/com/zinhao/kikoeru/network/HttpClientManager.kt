@@ -74,6 +74,23 @@ object HttpClientManager {
         return okHttpClientBuilder.build()
     }
 
+    /**
+     * 音频流专用的 client:唯一区别是**不设 callTimeout**。
+     *
+     * OkHttp 的 callTimeout 是"整通调用"的额度,连读响应体也算在里面。音频流是边下边播的,
+     * 30 秒一到整通调用被 cancel,播放器就断一次再重连 —— 表现就是每半分钟卡一下、严重时播不了。
+     * readTimeout 不一样,它只算两次读之间的间隔,流式不会误伤。
+     */
+    fun getStreamClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true)
+            .proxySelector(proxySelector)
+            .build()
+    }
+
     private fun OkHttpClient.Builder.useNoSniSSL(): OkHttpClient.Builder {
         val trustManager: X509TrustManager = Platform.get().platformTrustManager()
         val sslContext = SSLContext.getInstance("TLS")
