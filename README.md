@@ -1,27 +1,43 @@
-# Kikoeru-android
-用于浏览Kikoeru服务器内容的Android应用程序
+# Kikoeru-android(个人修改版)
+用于浏览 Kikoeru 服务器内容的 Android 应用程序。
 
-## 什么是Kikoeru
-[Kikoeru-project][1]
+上游项目:[Zinhao/Kikoeru-android](https://github.com/Zinhao/Kikoeru-android),本仓库是它的分支,许可证同样为 GPL-3.0。
+本分支只加了几件自己用得上的事,其余行为与上游一致。
 
-## App兼容什么版本的Kikoeru-project服务器
-Kikoeru-android 根据 Kikoeru-project V0.6.2 的Api进行适配开发，建议使用V0.6.2版本
+## 本分支相对上游的改动
 
-## TODO
-- [x] 歌词悬浮窗
-- [x] 在线播放视频
-- [x] 缓存音频，视频，歌词。可在服务器离线状态下播放
-- [x] 后台播放
-- [x] RJ搜索功能
-- [x] 定时停止
-- [x] 多账户切换
-- [x] 下载进度管理
-- [x] 视频播放
-- [x] 本地历史记录
-- [ ] 自定义播放列表
+| 改动 | 说明 |
+| --- | --- |
+| **回到前台需要验证** | 设置里可开关。开启后,从后台回到 App 会先盖一层**全屏不透明遮罩**(连状态栏/导航栏区域一起盖住),再弹出系统的指纹/锁屏密码验证;验证通过才露出内容。取消验证会把整个任务丢到后台,**返回键关不掉遮罩**。设备上没有指纹也没有锁屏密码时会放行并提示,避免把自己锁在外面 |
+| **只让本应用走本地代理** | 设置里可开关,并可自定义地址(默认 `127.0.0.1:7890`)。API 请求、封面图、下载、**音频流**四条出口全部走它 —— 音频那条单独换成了 OkHttp 数据源,否则列表能刷出来但音频仍会直连。不动系统代理,不影响其他应用。启动时探一次端口,代理没开就直连;所以请**先把代理开起来,再开本应用** |
+| **桌面字幕可调** | 字号(自定义 8~120sp)、颜色、透明度、背景(带圆角)。悬浮窗本来就能拖动、位置会自动保存。这几项改完**下一句字幕即生效** |
+| **去掉未使用的 Firebase / Crashlytics** | 上游代码里对它们零调用;而缺少 `google-services.json` 会让 CI 直接构建失败。顺带少两个依赖 |
+| **去掉硬编码的内网代理** | 上游在 debug 包里会把请求发往作者家里的内网地址(`192.168.31.253:7890`),换台设备必然超时 |
 
-## 红豆与丛雨的邀请函
-  [音声科学交流群][2]
+## 上游已有的能力
 
-  [1]: https://github.com/kikoeru-project/kikoeru-express
-  [2]: https://qun.qq.com/universal-share/share?ac=1&authKey=IkF606WMimQghbVPMvvSWe%2B5Y6vZgi5HiVOr1gbj8IlJS2ItV%2BCbV3v6L34v5HRx&busi_data=eyJncm91cENvZGUiOiI3MDU0NzUzMjEiLCJ0b2tlbiI6IlJoMnZyY1lrOHBIVFI5RmMvTVFHRnBCWjVqOWtWTU5mSWk3MFNzTFBhdXJidENRWnRRWmRycW5kV0lGQU5KYngiLCJ1aW4iOiIxNTIxOTgzMzA5In0%3D&data=0-hNe6b4M7A2W1Jqcs-QjVk1LSwPIDdLzCOkblttm8sXBCVpL3iVSonAWHk5t5qMTGA5Q2azdz1Wtz0pz0Ay2Q&svctype=4&tempid=h5_group_info  
+- 浏览 / 搜索 / 标签 / 声优 / 社团,支持自建 Kikoeru 服务器与多账户
+- 播放、后台播放、通知栏控制、休眠定时
+- **歌词悬浮窗**:服务端 LRC,也可导入本地 `lrc` / `vtt`
+- 下载音频(含进度管理)、离线播放、本地历史
+
+## 什么是 Kikoeru
+
+[Kikoeru-project](https://github.com/kikoeru-project/kikoeru-express) —— 一个同人音声流媒体服务器。
+
+## 兼容的服务器版本
+
+根据 Kikoeru-project **V0.6.2** 的 API 适配开发,建议使用 V0.6.2 版本。
+
+## 构建
+
+仓库里已有 GitHub Actions workflow:`Package Kikoeru Debug Apk`(手动触发)会执行 `./gradlew assembleDebug`,并把 APK 作为 artifact 上传。不需要任何 secret。
+
+## 安装前请读
+
+- 这里的包是 **debug 签名**,与上游发布的 release 包签名不同。覆盖安装前需要先卸载原版(本地设置和历史会清掉;存在外部文件夹的音频按设置可能还在)。
+- debug 构建下 `BuildConfig.DEBUG` 为真,上游代码里的休眠定时器会被除以 30(**30 分钟会变成 1 分钟**)。本分支已清掉唯一一处 debug 专属的网络逻辑,除此之外与 release 行为一致。
+
+## 许可证
+
+GPL-3.0,与上游一致。基于本代码的衍生作品同样需要以 GPL-3.0 开源。
