@@ -261,6 +261,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _works.postValue(currentList) // 发射新列表，观察者一定会收到
     }
 
+    /**
+     * “换一批”：从随机一页开始拉。
+     * 服务端的 seed 参数对 /api/works 是无效的（实测换 seed 结果完全一样），
+     * 所以只能换页码 —— 每页 20 条，总页数 = totalCount / 20。
+     */
+    fun shuffleStart() {
+        val pageSize = 20
+        val total = totalCount
+        val maxPage = if (total > pageSize) total / pageSize else 1
+        clearWorks()   // 会把 page/currentPage/totalCount 归成 1/1/0
+        val randomPage = (1..maxPage).random()
+        page = randomPage
+        currentPage = randomPage
+    }
+
     /** 清掉全部筛选，回到首页(全部作品) */
     fun resetFilter() {
         type = TYPE_ALL_WORK

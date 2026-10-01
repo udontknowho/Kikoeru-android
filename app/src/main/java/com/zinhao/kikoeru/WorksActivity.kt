@@ -165,12 +165,13 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
             }
         }
 
-        // 下拉刷新：首页就换一批(换 seed)，收藏 tab 就是普通重拉
+        // 下拉刷新：首页“换一批”（随机页码，服务端的 seed 没用），收藏 tab 就是普通重拉
         binding.swipe.setOnRefreshListener {
             if (currentTab == TAB_HOME) {
-                Api.reshuffleHome()
+                viewModel.shuffleStart()
+            } else {
+                viewModel.clearWorks()
             }
-            viewModel.clearWorks()
             viewModel.loadFromNetwork()
         }
 

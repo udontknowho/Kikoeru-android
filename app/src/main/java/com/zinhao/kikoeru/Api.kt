@@ -39,15 +39,6 @@ object Api {
     private var sort = 1
     private var order = "id"
 
-    /**
-     * 首页 /api/works 的 seed。
-     * 服务端按 seed 做一次伪随机扰动：seed 不变，每次进来顺序都一样；
-     * 下拉刷新时换一个，就"换一批"。存到配置里，冷启动保持上次的顺序。
-     */
-    private var homeSeed: Int
-        get() = App.getInstance().getValue(App.CONFIG_HOME_SEED, 35L).toInt()
-        set(value) = App.getInstance().setValue(App.CONFIG_HOME_SEED, value.toLong())
-
     private val okHttpClient: OkHttpClient = HttpClientManager.getPacEnabledClient()
 
     @JvmStatic
@@ -89,12 +80,6 @@ object Api {
         sort = 0
         App.getInstance().setValue(App.CONFIG_SORT, sort.toLong())
         App.getInstance().setValue(App.CONFIG_ORDER, order)
-    }
-
-    /** 下拉刷新用：给首页列表换一个伪随机 seed */
-    @JvmStatic
-    fun reshuffleHome() {
-        homeSeed = (1..9999).random()
     }
 
     /** 当前排序维度，给菜单显示用 */
@@ -195,7 +180,8 @@ object Api {
     }
     @JvmStatic
     fun doGetWorks(page: Int, callback: JSONObjectCallback?) {
-        val url = "${HOST}/api/works?order=${order}&sort=${makeSort()}&page=${page}&seed=${homeSeed}&subtitle=${subtitle}"
+        // seed 参数对 /api/works 无效（实测换 seed 结果一模一样），“换一批”靠换页码，见 MainViewModel.shuffleStart()
+        val url = "${HOST}/api/works?order=${order}&sort=${makeSort()}&page=${page}&seed=35&subtitle=${subtitle}"
         callback?.let {
             okhttpGetJsonObject(url,it)
         }
