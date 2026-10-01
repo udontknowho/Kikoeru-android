@@ -20,6 +20,12 @@
     <string name="my_progress">Self progress</string>
     <string name="about">About</string>
     <string name="all_works">All works</string>
+    <string name="home">Home</string>
+    <string name="favourites">Favourites</string>
+    <string name="mine">Mine</string>
+    <string name="review">My review</string>
+    <string name="category">Browse</string>
+    <string name="account">Account</string>
     <string name="works_layout">Layout</string>
     <string name="list_layout">List layout</string>
     <string name="cover_layout">Cover gird</string>

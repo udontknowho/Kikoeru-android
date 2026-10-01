@@ -297,7 +297,9 @@ object Api {
      */
     @JvmStatic
     fun doGetReview(@Filter filter: String?, page: Int, callback: JSONObjectCallback?) {
-        val url = "$HOST/api/review?order=${order}&sort=${makeSort()}&page=${page.coerceAtLeast(1)}&filter=${filter}"
+        // filter 为空 = “我的评价”（站点 /favourites 的 review 模式）；拼成 &filter=null 会被服务端当成非法值
+        val filterQuery = if (filter.isNullOrBlank()) "" else "&filter=$filter"
+        val url = "$HOST/api/review?order=${order}&sort=${makeSort()}&page=${page.coerceAtLeast(1)}$filterQuery"
         callback?.let {
             okhttpGetJsonObject(url,it)
         }

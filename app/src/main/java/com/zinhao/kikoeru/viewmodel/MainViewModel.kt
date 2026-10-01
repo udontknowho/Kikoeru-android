@@ -61,8 +61,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         set(value) = app.setValue(CONFIG_PARAM_STR, value)
 
     var vaId: String
-        get() = app.getValue(CONFIG_PARAM_STR, "") // 注意：与 tagStr 共用 key？原代码有冲突，需分开
-        set(value) = app.setValue(CONFIG_PARAM_STR, value)
+        get() = app.getValue(CONFIG_PARAM_STR_VA_ID, "")
+        set(value) = app.setValue(CONFIG_PARAM_STR_VA_ID, value)
 
     var vaName: String
         get() = app.getValue(CONFIG_PARAM_STR_VA_NAME, "")
@@ -87,6 +87,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var _layoutTypeLiveData = MutableLiveData<Int>(WorkAdapter.LAYOUT_STAGGERED)
     val layoutChangeLiveData: LiveData<Int> = _layoutTypeLiveData
 
+    // 本次请求对应的类型：切 tab/筛选时用它丢弃过期响应
+    private var requestType = TYPE_ALL_WORK
+    // 请求还在飞时又来了新的加载请求，等它回来再拉一次
+    private var pendingReload = false
+
     // ---- 方法 ----
 
     fun clearWorks() {
@@ -97,7 +102,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadFromNetwork() {
-        if (_loading.value == true) return
+        if (_loading.value == true) {
+            pendingReload = true
+            return
+        }
         _loading.postValue(true)
 
         // 使用协程包装回调（避免阻塞主线程）
@@ -114,6 +122,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
             // 直接在主线程调用原来的 Api 方法（它们内部会异步执行）
+            requestType = type
             performRequest()
         }
     }
@@ -121,6 +130,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val callback = object : AsyncHttpClient.JSONObjectCallback() {
         override fun onCompleted(e: Exception?, response: AsyncHttpResponse?, jsonObject: JSONObject?) {
             _loading.postValue(false)
+            // 期间切了 tab/筛选，或又排了一次加载：本次结果作废
+            val discard = pendingReload || requestType != type
+            if (pendingReload) {
+                pendingReload = false
+                loadFromNetwork()
+            }
+            if (discard) return
             if (e != null) {
                 _errorEvent.postValue(e)
                 return
@@ -150,7 +166,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun performRequest() {
-        when (type) {
+        when (requestType) {
             TYPE_ALL_WORK -> Api.doGetWorks(page, callback)
             TYPE_SELF_LISTENING -> Api.doGetReview(Api.FILTER_LISTENING, page, callback)
             TYPE_SELF_LISTENED -> Api.doGetReview(Api.FILTER_LISTENED, page, callback)
@@ -158,6 +174,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             TYPE_SELF_REPLAY -> Api.doGetReview(Api.FILTER_REPLAY, page, callback)
             TYPE_SELF_POSTPONED -> Api.doGetReview(Api.FILTER_POSTPONED, page, callback)
             TYPE_TAG_WORK -> Api.doGetWorksByTag(page, tagId, callback)
+            TYPE_SELF_REVIEW -> Api.doGetReview(null, page, callback)
             TYPE_VA_WORK -> Api.doGetWorkByVa(page, vaId, callback)
             TYPE_CIRCLES_WORK -> Api.doGetWorkByCircles(page, circlesId, callback)
             TYPE_LOCAL_WORK -> loadLocalWorks()
@@ -169,6 +186,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             LocalFileCache.getInstance().readLocalDownloadWorks(object : AsyncHttpClient.JSONObjectCallback() {
                 override fun onCompleted(e: Exception?, response: AsyncHttpResponse?, jsonObject: JSONObject?) {
                     _loading.postValue(false)
+                    if (pendingReload) {
+                        pendingReload = false
+                        loadFromNetwork()
+                    }
                     if (e != null) {
                         _errorEvent.postValue(e)
                         return
@@ -192,6 +213,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadLastOpenWorks() {
+        // 只有首页(全部作品)才有“上次的内容”可恢复；筛选状态(标签/声优/社团/进度)不能顶着首页恢复
+        if (type != TYPE_ALL_WORK) {
+            resetFilter()
+            _title.postValue(computeTitle())
+            loadFromNetwork()
+            return
+        }
         try {
             LocalFileCache.getInstance().readLastOpenWorks(object : AsyncHttpClient.JSONArrayCallback() {
                 override fun onCompleted(e: Exception?, response: AsyncHttpResponse?, jsonArray: JSONArray?) {
@@ -233,6 +261,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _works.postValue(currentList) // 发射新列表，观察者一定会收到
     }
 
+    /** 清掉全部筛选，回到首页(全部作品) */
+    fun resetFilter() {
+        type = TYPE_ALL_WORK
+        tagId = -1
+        tagStr = ""
+        vaId = ""
+        vaName = ""
+        circlesId = -1L
+        circlesName = ""
+    }
+
     private fun computeTitle(): String {
         return when (type) {
             TYPE_ALL_WORK -> getApplication<Application>().getString(R.string.app_name)
@@ -242,6 +281,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             TYPE_SELF_REPLAY -> getApplication<Application>().getString(R.string.replay)
             TYPE_SELF_POSTPONED -> getApplication<Application>().getString(R.string.postponed)
             TYPE_TAG_WORK -> tagStr
+            TYPE_SELF_REVIEW -> getApplication<Application>().getString(R.string.review)
             TYPE_VA_WORK -> vaName
             TYPE_CIRCLES_WORK -> circlesName
             TYPE_LOCAL_WORK -> {
@@ -284,6 +324,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         const val TYPE_LOCAL_WORK = 498
         const val TYPE_VA_WORK = 499
         const val TYPE_CIRCLES_WORK = 500
+        const val TYPE_SELF_REVIEW = 501
 
         // SharedPreferences keys（补充一些原来缺失的）
         private const val CONFIG_TYPE = "last_type"
@@ -292,6 +333,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         private const val CONFIG_CURRENT_PAGE = "current_page"
         private const val CONFIG_PARAM_INT = "last_param_int"
         private const val CONFIG_PARAM_STR = "last_param_str"
+        private const val CONFIG_PARAM_STR_VA_ID = "last_param_va_id"
         private const val CONFIG_PARAM_STR_VA_NAME = "last_param_va_name"
         private const val CONFIG_PARAM_LONG_CIRCLES_ID = "last_param_circles_id"
         private const val CONFIG_PARAM_STR_CIRCLES_NAME = "last_param_circles_name"

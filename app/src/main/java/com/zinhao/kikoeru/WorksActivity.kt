@@ -20,6 +20,7 @@ import androidx.core.graphics.Insets
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.*
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.koushikdutta.async.http.AsyncHttpClient
 import com.koushikdutta.async.http.AsyncHttpResponse
 import com.zinhao.kikoeru.Api.setOrder
@@ -51,9 +52,22 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
     private var inAnim: Animation? = null
     private var shouldShowAnim = true
 
-    // 弹出菜单
-    private var progressMenu: ListPopupWindow? = null
-    private var moreMenu: ListPopupWindow? = null
+    // 底栏当前 tab
+    private var currentTab = TAB_HOME
+
+    // 收藏 tab 里选中的状态（默认“我的评价”）
+    private var favType = MainViewModel.TYPE_SELF_REVIEW
+
+    /** 收藏 tab 的 chip → 列表类型 */
+    private val chipTypeMap = linkedMapOf(
+        R.id.chipReview to MainViewModel.TYPE_SELF_REVIEW,
+        R.id.chipMarked to MainViewModel.TYPE_SELF_MARKED,
+        R.id.chipListening to MainViewModel.TYPE_SELF_LISTENING,
+        R.id.chipListened to MainViewModel.TYPE_SELF_LISTENED,
+        R.id.chipReplay to MainViewModel.TYPE_SELF_REPLAY,
+        R.id.chipPostponed to MainViewModel.TYPE_SELF_POSTPONED,
+        R.id.chipLocal to MainViewModel.TYPE_LOCAL_WORK
+    )
 
     private var loadingDecoration: LoadingFooterDecoration? = null
 
@@ -104,7 +118,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         setSafeArea(binding.appBarLayout,object : BaseActivity.InsetReady{
             override fun onInsetReady(insets: Insets) {
                 binding.recyclerView.setPadding(insets.left, 0, insets.right, 0)
-                binding.linearLayout.setPadding(insets.left, 0, insets.right, insets.bottom)
+                binding.bottomBar.setPadding(insets.left, 0, insets.right, insets.bottom)
             }
         })
 
@@ -125,23 +139,45 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         // 初始化布局管理器
         val storeLayoutType = viewModel.layoutType
         initLayout(storeLayoutType)
+
+        // 收藏 tab 默认选“我的评价”
+        binding.chipGroup.check(R.id.chipReview)
     }
 
     // ==================== 监听器设置 ====================
 
     private fun setupListeners() {
-        // 全部作品按钮
-        binding.bt1.setOnClickListener {
-            viewModel.type = MainViewModel.TYPE_ALL_WORK
-            viewModel.clearWorks()
-            viewModel.loadFromNetwork()
+        // 底栏：首页 / 收藏 / 我的
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> switchTab(TAB_HOME)
+                R.id.nav_favourites -> switchTab(TAB_FAVOURITES)
+                R.id.nav_mine -> switchTab(TAB_MINE)
+            }
+            true
         }
 
-        // 进度筛选按钮
-        binding.bt2.setOnClickListener { showProgressMenu() }
+        // 收藏 tab 的状态 chip
+        chipTypeMap.forEach { (chipId, type) ->
+            binding.chipGroup.findViewById<View>(chipId).setOnClickListener {
+                applyFavouriteFilter(type)
+            }
+        }
 
-        // 更多按钮
-        binding.bt3.setOnClickListener { showMoreMenu() }
+        // 我的
+        binding.mineAccount.setOnClickListener {
+            App.getInstance().setValue(App.CONFIG_UPDATE_TIME, 0)
+            startActivity(Intent(this, UserSwitchActivity::class.java))
+        }
+        binding.mineDownload.setOnClickListener {
+            startActivity(Intent(this, DownLoadMissionActivity::class.java))
+        }
+        binding.mineHistory.setOnClickListener {
+            startActivity(Intent(this, LastWatchActivity::class.java))
+        }
+        binding.mineSettings.setOnClickListener {
+            startActivity(Intent(this, MoreActivity::class.java))
+        }
 
         // 浮动歌词窗口按钮
         ibFloatLrcWindow.setOnClickListener {
@@ -207,8 +243,10 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
     private fun observeViewModel() {
         // 作品列表变化
         viewModel.works.observe(this) { worksList ->
-            binding.recyclerView.visibility = View.VISIBLE
-            binding.llNetErr.visibility = View.GONE
+            if (currentTab != TAB_MINE) {
+                binding.recyclerView.visibility = View.VISIBLE
+                binding.llNetErr.visibility = View.GONE
+            }
             if (workAdapter == null) {
                 val layoutType = viewModel.layoutType
                 setupAdapter(worksList, layoutType)
@@ -220,7 +258,10 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
 
         // 标题变化
         viewModel.title.observe(this) { title ->
-            supportActionBar?.title = title
+            // “我的”页面的标题是固定的，别被列表回调覆盖
+            if (currentTab != TAB_MINE) {
+                supportActionBar?.title = title
+            }
         }
 
         // 加载状态变化
@@ -232,7 +273,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         viewModel.errorEvent.observe(this) { throwable ->
             if(throwable is Exception){
                 alertException(throwable)
-                if(viewModel.works.value?.size == 0){
+                if(viewModel.works.value?.size == 0 && currentTab != TAB_MINE){
                     binding.recyclerView.visibility = View.GONE
                     binding.llNetErr.visibility = View.VISIBLE
                     binding.tvNetErr.text = "${throwable.message}"
@@ -328,86 +369,75 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         // adapter 已经在 observe 中设置，此处不需要重复设置
     }
 
-    // ==================== 弹出菜单 ====================
+    // ==================== 底栏 / 收藏 chip ====================
 
-    private fun showProgressMenu() {
-        if (progressMenu == null) {
-            progressMenu = ListPopupWindow(this).apply {
-                setAdapter(ArrayAdapter(
-                    this@WorksActivity,
-                    android.R.layout.simple_list_item_1,
-                    listOf(
-                        getString(R.string.marked),
-                        getString(R.string.listening),
-                        getString(R.string.listened),
-                        getString(R.string.replay),
-                        getString(R.string.postponed)
-                    )
-                ))
-                isModal = true
-                anchorView = binding.bt2
-                setOnItemClickListener { _, _, position, _ ->
-                    dismiss()
-                    viewModel.clearWorks()
-                    when (position) {
-                        0 -> {
-                            viewModel.type = MainViewModel.TYPE_SELF_MARKED
-                            viewModel.loadFromNetwork()
-                        }
-                        1 -> {
-                            viewModel.type = MainViewModel.TYPE_SELF_LISTENING
-                            viewModel.loadFromNetwork()
-                        }
-                        2 -> {
-                            viewModel.type = MainViewModel.TYPE_SELF_LISTENED
-                            viewModel.loadFromNetwork()
-                        }
-                        3 -> {
-                            viewModel.type = MainViewModel.TYPE_SELF_REPLAY
-                            viewModel.loadFromNetwork()
-                        }
-                        4 -> {
-                            viewModel.type = MainViewModel.TYPE_SELF_POSTPONED
-                            viewModel.loadFromNetwork()
-                        }
-                    }
-                }
+    private fun switchTab(tab: Int) {
+        // 已经在首页时再点一次首页 = 清掉标签/声优/社团筛选，回到全部作品
+        if (tab == TAB_HOME && currentTab == TAB_HOME) {
+            showAllWorks()
+            return
+        }
+        currentTab = tab
+        when (tab) {
+            TAB_HOME -> {
+                binding.chipBar.visibility = View.GONE
+                binding.mineScroll.visibility = View.GONE
+                showAllWorks()
+            }
+            TAB_FAVOURITES -> {
+                binding.chipBar.visibility = View.VISIBLE
+                binding.mineScroll.visibility = View.GONE
+                applyFavouriteFilter(favType)
+            }
+            TAB_MINE -> {
+                binding.chipBar.visibility = View.GONE
+                binding.mineScroll.visibility = View.VISIBLE
+                binding.recyclerView.visibility = View.GONE
+                binding.llNetErr.visibility = View.GONE
+                binding.tvAccount.text = getString(R.string.account) +
+                        "  ·  " + (App.getInstance().currentUser()?.getName() ?: "")
+                supportActionBar?.title = getString(R.string.mine)
             }
         }
-        progressMenu?.show()
     }
 
-    private fun showMoreMenu() {
-        if (moreMenu == null) {
-            moreMenu = ListPopupWindow(this).apply {
-                setAdapter(ArrayAdapter(
-                    this@WorksActivity,
-                    android.R.layout.simple_list_item_1,
-                    listOf(
-                        getString(R.string.va_voicer),
-                        getString(R.string.tag),
-                        getString(R.string.circles),
-                        getString(R.string.local_works)
-                    )
-                ))
-                isModal = true
-                anchorView = binding.bt3
-                setOnItemClickListener { _, _, position, _ ->
-                    dismiss()
-                    when (position) {
-                        0 -> startActivityForResult(Intent(this@WorksActivity, VasActivity::class.java), VA_SELECT_RESULT)
-                        1 -> startActivityForResult(Intent(this@WorksActivity, TagsActivity::class.java), TAG_SELECT_RESULT)
-                        2 -> startActivityForResult(Intent(this@WorksActivity, CirclesActivity::class.java), CIRCLES_SELECT_RESULT)
-                        3 -> {
-                            viewModel.clearWorks()
-                            viewModel.type = MainViewModel.TYPE_LOCAL_WORK
-                            viewModel.loadFromNetwork()
-                        }
-                    }
-                }
-            }
+    /** 首页 = 全部作品，且不允许带着上次的筛选状态进来 */
+    private fun showAllWorks() {
+        binding.recyclerView.visibility = View.VISIBLE
+        binding.llNetErr.visibility = View.GONE
+        viewModel.resetFilter()
+        viewModel.clearWorks()
+        viewModel.loadFromNetwork()
+    }
+
+    /** 收藏 tab 里的一个状态 */
+    private fun applyFavouriteFilter(type: Int) {
+        favType = type
+        binding.recyclerView.visibility = View.VISIBLE
+        binding.llNetErr.visibility = View.GONE
+        viewModel.clearWorks()
+        viewModel.type = type
+        viewModel.loadFromNetwork()
+    }
+
+    /** 声优 / 标签 / 社团 */
+    private fun showCategorySheet() {
+        val sheet = BottomSheetDialog(this)
+        val content = layoutInflater.inflate(R.layout.sheet_category, null)
+        content.findViewById<View>(R.id.categoryVa).setOnClickListener {
+            sheet.dismiss()
+            startActivityForResult(Intent(this, VasActivity::class.java), VA_SELECT_RESULT)
         }
-        moreMenu?.show()
+        content.findViewById<View>(R.id.categoryTag).setOnClickListener {
+            sheet.dismiss()
+            startActivityForResult(Intent(this, TagsActivity::class.java), TAG_SELECT_RESULT)
+        }
+        content.findViewById<View>(R.id.categoryCircles).setOnClickListener {
+            sheet.dismiss()
+            startActivityForResult(Intent(this, CirclesActivity::class.java), CIRCLES_SELECT_RESULT)
+        }
+        sheet.setContentView(content)
+        sheet.show()
     }
 
     // ==================== 底部播放栏控制 ====================
@@ -463,8 +493,6 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
     // ==================== 菜单 ====================
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menu.add(0, 0, 0, "切换账号")
-
         val layoutMenu = menu.addSubMenu(0, 9, 9, R.string.works_layout).apply {
             setIcon(R.drawable.ic_baseline_view_column_24)
             add(2, 10, 10, R.string.list_layout)
@@ -483,11 +511,14 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
             item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
 
-        menu.add(0, 22, 22, R.string.download_mission)
-        menu.add(0, 24, 24, R.string.local_history)
-        menu.add(0, 15, 99, R.string.more)
+        // 声优 / 标签 / 社团
+        menu.add(0, 25, 25, R.string.category).apply {
+            setIcon(R.drawable.ic_baseline_category_24)
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
 
-        val searchMenu = menu.add(0, 23, 23, R.string.search).apply {
+        // 搜索留在最右
+        menu.add(0, 23, 23, R.string.search).apply {
             setIcon(R.drawable.ic_baseline_search_24)
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
@@ -525,25 +556,12 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         }
 
         return when (item.itemId) {
-            0 -> {
-                App.getInstance().setValue(App.CONFIG_UPDATE_TIME, 0)
-                startActivity(Intent(this, UserSwitchActivity::class.java))
-                true
-            }
-            15 -> {
-                startActivity(Intent(this, MoreActivity::class.java))
-                true
-            }
-            22 -> {
-                startActivity(Intent(this, DownLoadMissionActivity::class.java))
-                true
-            }
             23 -> {
                 startActivity(Intent(this, SearchActivity::class.java))
                 true
             }
-            24 -> {
-                startActivity(Intent(this, LastWatchActivity::class.java))
+            25 -> {
+                showCategorySheet()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -764,5 +782,9 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         const val TAG_SELECT_RESULT = 14
         const val VA_SELECT_RESULT = 15
         const val CIRCLES_SELECT_RESULT = 16
+
+        private const val TAB_HOME = 0
+        private const val TAB_FAVOURITES = 1
+        private const val TAB_MINE = 2
     }
 }

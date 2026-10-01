@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="8dp"
+    android:paddingBottom="16dp">
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="6dp"
+            android:text="@string/category"
+            android:textSize="13sp"
+            android:textColor="@color/gray"/>
+
+    <TextView
+            android:id="@+id/categoryVa"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:background="@drawable/item_bg"
+            android:drawableStart="@drawable/ic_baseline_people_24"
+            android:drawablePadding="16dp"
+            android:drawableTint="@color/black"
+            android:text="@string/va_voicer"
+            android:textSize="16sp"/>
+
+    <TextView
+            android:id="@+id/categoryTag"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:background="@drawable/item_bg"
+            android:drawableStart="@drawable/ic_baseline_tag_24"
+            android:drawablePadding="16dp"
+            android:drawableTint="@color/black"
+            android:text="@string/tag"
+            android:textSize="16sp"/>
+
+    <TextView
+            android:id="@+id/categoryCircles"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:background="@drawable/item_bg"
+            android:drawableStart="@drawable/ic_baseline_people_24"
+            android:drawablePadding="16dp"
+            android:drawableTint="@color/black"
+            android:text="@string/circles"
+            android:textSize="16sp"/>
+</LinearLayout>

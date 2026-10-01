@@ -6,6 +6,12 @@
     <string name="my_progress">我的进度</string>
     <string name="about">关于</string>
     <string name="all_works">全部作品</string>
+    <string name="home">首页</string>
+    <string name="favourites">收藏</string>
+    <string name="mine">我的</string>
+    <string name="review">我的评价</string>
+    <string name="category">分类</string>
+    <string name="account">账户</string>
     <string name="works_layout">布局</string>
     <string name="list_layout">列表布局</string>
     <string name="cover_layout">封面网格</string>
