@@ -116,18 +116,19 @@ class LoginAccountActivity : BaseActivity() {
 
         if (etUser == null || etPassword == null || etServer == null) return
 
-        // 服务器下拉：两个内置站点；想用别的地址直接手上改就行（等于另存一个）
+        // 服务器下拉：内置站点 + “自定义…”；想用别的地址就选自定义自己填
         if (etServer is MaterialAutoCompleteTextView) {
+            val entries = Api.BUILTIN_HOSTS.toMutableList().apply { add(getString(R.string.host_custom)) }
             // 默认的过滤会拿当前文本去筛，字段里已经有完整地址时列表会什么都显不出来，
             // 所以换成一个“永远全显示”的 adapter，并在点击/获得焦点时主动展开
             etServer.setAdapter(object : ArrayAdapter<String>(
-                this, android.R.layout.simple_list_item_1, presetHosts
+                this, android.R.layout.simple_list_item_1, entries
             ) {
                 override fun getFilter(): Filter = object : Filter() {
                     override fun performFiltering(constraint: CharSequence?): FilterResults =
                         FilterResults().apply {
-                            values = presetHosts.toList()
-                            count = presetHosts.size
+                            values = entries
+                            count = entries.size
                         }
 
                     override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
@@ -139,6 +140,13 @@ class LoginAccountActivity : BaseActivity() {
             etServer.setOnClickListener { etServer.showDropDown() }
             etServer.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) etServer.showDropDown()
+            }
+            etServer.setOnItemClickListener { _, _, position, _ ->
+                if (position == Api.BUILTIN_HOSTS.size) {
+                    // 选中“自定义…”：清空让用户自己填，账号密码框照常可用
+                    etServer.setText("")
+                    etServer.requestFocus()
+                }
             }
         }
         etServer.addTextChangedListener(object : TextWatcher {
@@ -213,11 +221,5 @@ class LoginAccountActivity : BaseActivity() {
 
     companion object {
         private const val TAG = "LoginAccountActivity"
-
-        /** 内置的站点：有一个要账号，有一个免账号 */
-        private val presetHosts = arrayOf(
-            "https://api.asmr.one",
-            "https://asmr.unikon.art"
-        )
     }
 }

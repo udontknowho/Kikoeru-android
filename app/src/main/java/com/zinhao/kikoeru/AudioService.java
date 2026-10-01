@@ -817,6 +817,11 @@ public class AudioService extends Service {
                         }
 
                     }
+                    // 有的实例（emoe.top 这类在线库）给的是 HLS：/api/online/hls/xxx 会 302 到 .m3u8。
+                    // 这种地址没扩展名，得手动标 MIME，否则会被当成普通音频去解，直接报无法播放。
+                    if (path.contains("/hls/") || path.contains(".m3u8")) {
+                        builder.setMimeType(MimeTypes.APPLICATION_M3U8);
+                    }
                     builder.setUri(path);
                 }
                 MediaMetadata.Builder metaBuilder = new MediaMetadata.Builder();

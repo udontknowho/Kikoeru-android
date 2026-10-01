@@ -39,11 +39,18 @@ object Api {
     private var sort = 1
     private var order = "id"
 
+    /** 内置站点（登录页下拉、账号页「内置站点」共用） */
+    val BUILTIN_HOSTS = arrayOf(
+        "https://api.asmr.one",
+        "https://asmr.unikon.art",
+        "https://asmr.emoe.top"
+    )
+
     /**
      * 不需要账号的站点（个人库，只有游客模式）。
      * 这些实例的差别：/api/auth/me 的 POST 会被 Cloudflare 拦、排序字段叫 created_at、搜索用查询参数。
      */
-    private val GUEST_HOSTS = listOf("asmr.unikon.art")
+    private val GUEST_HOSTS = listOf("asmr.unikon.art", "asmr.emoe.top")
 
     @JvmStatic
     fun isGuestHost(host: String?): Boolean =

@@ -57,7 +57,7 @@ class UserSwitchActivity : BaseActivity() {
 
     /** 内置站点：免账号的直接建号切过去，要账号的跳登录页 */
     private fun showBuiltinSites() {
-        val hosts = arrayOf("https://api.asmr.one", "https://asmr.unikon.art")
+        val hosts = Api.BUILTIN_HOSTS
         AlertDialog.Builder(this, R.style.RoundedAlertDialog)
             .setTitle(R.string.add_builtin_server)
             .setItems(hosts) { _, which ->
