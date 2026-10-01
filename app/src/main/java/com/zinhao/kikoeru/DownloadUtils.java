@@ -180,7 +180,7 @@ public class DownloadUtils implements Closeable {
         private String getDownLoadUrl() throws JSONException {
             String url = jsonObject.getString("mediaDownloadUrl");
             if (!url.startsWith("http")) {
-                url = App.getInstance().currentUser().getHost() + String.format("%s?token=%s", url, Api.token);
+                url = Api.hostOrDefault() + String.format("%s?token=%s", url, Api.token);
             } else {
                 url = String.format("%s?token=%s", url, Api.token);
             }

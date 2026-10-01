@@ -148,7 +148,7 @@ class WorkAdapter(
                 holder.tvCircles.setTagClickListener(circlesClickListener)
                 holder.tvTags.setTagClickListener(tagClickListener)
                 Glide.with(holder.itemView.getContext()).load(
-                    App.getInstance().currentUser().getHost() + String.format(
+                    Api.hostOrDefault() + String.format(
                         "/api/cover/%d?type=sam&token=%s",
                         item.getInt("id"),
                         Api.token

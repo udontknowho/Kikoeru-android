@@ -100,7 +100,9 @@ public class LocalFileCache implements Runnable, Closeable {
     public boolean getLrcText(File audioFile, AsyncHttpClient.StringCallback callback) {
         File dir = audioFile.getParentFile();
         String name = audioFile.getName();
-        String audioContentName = name.substring(0, name.lastIndexOf("."));
+        // 音乐文件名没带扩展名时 lastIndexOf(".") 是 -1，以前 substring 会崩（StringIndexOutOfBounds）
+        int dot = name.lastIndexOf(".");
+        String audioContentName = dot > 0 ? name.substring(0, dot) : name;
 
         File lrcFile = new File(dir, audioContentName + ".lrc");
 

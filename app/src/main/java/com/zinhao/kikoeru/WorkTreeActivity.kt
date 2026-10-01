@@ -235,7 +235,7 @@ class WorkTreeActivity : BaseActivity(), View.OnClickListener, MusicChangeListen
     private fun initHeader() {
         try {
             Glide.with(this).load(
-                App.getInstance().currentUser().host + "/api/cover/${work.getInt("id")}?token=${Api.token}"
+                Api.hostOrDefault() + "/api/cover/${work.getInt("id")}?token=${Api.token}"
             )
                 .apply(App.getInstance().getRadius15Pic())
                 .into(headerViewCompat.ivCover)
@@ -412,7 +412,7 @@ class WorkTreeActivity : BaseActivity(), View.OnClickListener, MusicChangeListen
         var url = item.getString(JSONConst.WorkTree.MEDIA_STREAM_URL)
         val intent = Intent(Intent.ACTION_VIEW)
         if (!url.startsWith("http")) {
-            url = String.format("%s%s", App.getInstance().currentUser().getHost(), url)
+            url = String.format("%s%s", Api.hostOrDefault(), url)
         }
         intent.setData(Uri.parse(url))
         try {
@@ -655,7 +655,7 @@ class WorkTreeActivity : BaseActivity(), View.OnClickListener, MusicChangeListen
                             }
                             try {
                                 val workHost = work.getString(JSONConst.Work.HOST)
-                                if (App.getInstance().currentUser().getHost() != workHost) {
+                                if (Api.hostOrDefault() != workHost) {
                                     Toast.makeText(
                                         this@WorkTreeActivity,
                                         "switch host user then start download!",
@@ -711,7 +711,7 @@ class WorkTreeActivity : BaseActivity(), View.OnClickListener, MusicChangeListen
                     if (!itemStreamUrl.startsWith("http")) {
                         readableUrl = String.format(
                             "%s%s?token=%s",
-                            App.getInstance().currentUser().getHost(),
+                            Api.hostOrDefault(),
                             itemStreamUrl,
                             Api.token
                         )
@@ -737,7 +737,7 @@ class WorkTreeActivity : BaseActivity(), View.OnClickListener, MusicChangeListen
     private fun saveWorkWithTree() {
         if (jsonWorkTrees != null) {
             try {
-                work.put(JSONConst.Work.HOST, App.getInstance().currentUser().getHost())
+                work.put(JSONConst.Work.HOST, Api.hostOrDefault())
                 LocalFileCache.getInstance().saveWork(work, jsonWorkTrees)
             } catch (jsonException: JSONException) {
                 jsonException.printStackTrace()

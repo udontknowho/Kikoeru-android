@@ -407,7 +407,7 @@ object Api {
     fun doPutReview(id: Long, @Filter progress: String?, callback: JSONObjectCallback?) {
         val url = "${HOST}/api/review?starOnly=false&progressOnly=true"
         val jsonObject = JSONObject()
-        val userName = App.getInstance().currentUser().getName()
+        val userName = App.getInstance().currentUser()?.getName() ?: "guest"
         try {
             jsonObject.put("user_name", userName)
             jsonObject.put("work_id", id)
@@ -437,16 +437,23 @@ object Api {
         }
     }
 
+    /**
+     * 当前用户的 host。服务刚启动/恢复上次播放列表时 allUsers 还没加载完，
+     * currentUser() 会是 null，以前直接 .getHost() 就崩（崩溃日志里的 NPE 就是这个）。
+     */
+    @JvmStatic
+    fun hostOrDefault(): String =
+        App.getInstance().currentUser()?.getHost() ?: HOST
+
     @JvmStatic
     fun minCoverImageUrl(rjNumber: Long): String {
-        //App.getInstance().currentUser().getHost() + String.format(Locale.US, "/api/cover/%d?type=sam", rjNumber
-        return (App.getInstance().currentUser().getHost()
+        return (hostOrDefault()
                 + String.format("/api/cover/%d?type=sam&token=%s", rjNumber, token))
     }
 
     @JvmStatic
     fun fullCoverImageUrl(rjNumber: Long): String {
-        return (App.getInstance().currentUser().getHost()
+        return (hostOrDefault()
                 + String.format("/api/cover/%d?token=%s", rjNumber, token))
     }
 
