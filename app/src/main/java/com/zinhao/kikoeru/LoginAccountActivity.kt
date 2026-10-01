@@ -51,17 +51,18 @@ class LoginAccountActivity : BaseActivity() {
         btSignIn!!.setOnClickListener(View.OnClickListener { v: View? ->
             // 更新 ViewModel 中的值
             updateViewModelInputs()
-            if (Api.isGuestHost(currentHostText())) {
+            if (Api.hostKind(currentHostText()) == Api.HostKind.NO_TOKEN) {
                 // 免账号站点：直接建本地 guest 用户，不走登录接口
                 viewModel!!.loginWithoutAccount()
             } else {
+                // 游客 token 的站点，字段里已经填好 guest/guest，走正常登录
                 viewModel!!.login()
             }
         })
 
         btGuest!!.setOnClickListener(View.OnClickListener { v: View? ->
             updateViewModelInputs()
-            if (Api.isGuestHost(currentHostText())) {
+            if (Api.hostKind(currentHostText()) == Api.HostKind.NO_TOKEN) {
                 viewModel!!.loginWithoutAccount()
             } else {
                 viewModel!!.loginAsGuest()
@@ -72,13 +73,30 @@ class LoginAccountActivity : BaseActivity() {
     private fun currentHostText(): String =
         tilServer?.editText?.text?.toString()?.trim() ?: ""
 
-    /** 免账号站点：账号/密码框直接禁用，登录按钮换成“进入” */
+    /** 免账号/游客站点：账号密码框禁用，登录按钮换成对应文案 */
     private fun applyHostMode(host: String) {
-        val guestOnly = Api.isGuestHost(host)
-        tilUser?.isEnabled = !guestOnly
-        tilPassword?.isEnabled = !guestOnly
-        btSignIn?.text =
-            if (guestOnly) getString(R.string.user_enter) else getString(R.string.user_sign_in)
+        when (Api.hostKind(host)) {
+            Api.HostKind.NO_TOKEN -> {
+                tilUser?.isEnabled = false
+                tilPassword?.isEnabled = false
+                btSignIn?.text = getString(R.string.user_enter)
+            }
+
+            Api.HostKind.GUEST_TOKEN -> {
+                // 这种库只认游客账号，直接把 guest/guest 填好免得输错
+                tilUser?.isEnabled = false
+                tilPassword?.isEnabled = false
+                tilUser?.editText?.setText("guest")
+                tilPassword?.editText?.setText("guest")
+                btSignIn?.text = getString(R.string.user_enter_guest)
+            }
+
+            else -> {
+                tilUser?.isEnabled = true
+                tilPassword?.isEnabled = true
+                btSignIn?.text = getString(R.string.user_sign_in)
+            }
+        }
     }
 
     private fun observeViewModel() {

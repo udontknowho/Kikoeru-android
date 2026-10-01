@@ -75,6 +75,7 @@
     <string name="user_guest">访客</string>
     <string name="user_sign_in">登录</string>
     <string name="user_enter">进入（免账号）</string>
+    <string name="user_enter_guest">进入（游客）</string>
     <string name="add_builtin_server">内置站点</string>
     <string name="host_custom">自定义…</string>
     <string name="guest_no_token">这个站点不需要账号</string>

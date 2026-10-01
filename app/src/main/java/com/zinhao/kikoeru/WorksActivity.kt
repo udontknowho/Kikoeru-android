@@ -144,8 +144,8 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         // 收藏 tab 默认选“我的评价”
         binding.chipGroup.check(R.id.chipReview)
 
-        // 免账号的实例(个人库)没有“我的评价/进度”，把它们收起来
-        if (Api.isGuestHost(Api.currentHost())) {
+        // 免账号/游客的实例(别人的公开库)没有“我的评价/进度”，把它们收起来
+        if (Api.hostKind(Api.currentHost()) != Api.HostKind.NORMAL) {
             binding.bottomNav.menu.findItem(R.id.nav_favourites)?.isVisible = false
         }
     }

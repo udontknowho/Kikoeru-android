@@ -43,18 +43,38 @@ object Api {
     val BUILTIN_HOSTS = arrayOf(
         "https://api.asmr.one",
         "https://asmr.unikon.art",
-        "https://asmr.emoe.top"
+        "https://asmr.emoe.top",
+        "https://asmr.homes"
     )
 
     /**
-     * 不需要账号的站点（个人库，只有游客模式）。
-     * 这些实例的差别：/api/auth/me 的 POST 会被 Cloudflare 拦、排序字段叫 created_at、搜索用查询参数。
+     * 服务器类型：
+     * - NORMAL：正常账号（asmr.one）
+     * - GUEST_TOKEN：只用 POST guest/guest 拿 token（asmr.homes）
+     * - NO_TOKEN：接口本身不要 token，POST 会被 Cloudflare 拦，本地建 guest 用户就行（unikon / emoe.top）
      */
-    private val GUEST_HOSTS = listOf("asmr.unikon.art", "asmr.emoe.top")
+    enum class HostKind { NORMAL, GUEST_TOKEN, NO_TOKEN }
+
+    private val GUEST_TOKEN_HOSTS = listOf("asmr.homes")
+    private val NO_TOKEN_HOSTS = listOf("asmr.unikon.art", "asmr.emoe.top")
 
     @JvmStatic
-    fun isGuestHost(host: String?): Boolean =
-        !host.isNullOrEmpty() && GUEST_HOSTS.any { host.contains(it, ignoreCase = true) }
+    fun hostKind(host: String?): HostKind {
+        if (host.isNullOrEmpty()) return HostKind.NORMAL
+        if (NO_TOKEN_HOSTS.any { host.contains(it, ignoreCase = true) }) return HostKind.NO_TOKEN
+        if (GUEST_TOKEN_HOSTS.any { host.contains(it, ignoreCase = true) }) return HostKind.GUEST_TOKEN
+        return HostKind.NORMAL
+    }
+
+    /** 需要 token 才能用，但游客不能用 POST 拿（unikon / emoe.top） */
+    @JvmStatic
+    fun isNoTokenHost(host: String?): Boolean = hostKind(host) == HostKind.NO_TOKEN
+
+    /**
+     * “个人库”这一类实例（不是 asmr.one 那套）：排序字段叫 created_at、搜索走查询参数、支持 random
+     */
+    @JvmStatic
+    fun isPersonalHost(host: String?): Boolean = hostKind(host) != HostKind.NORMAL
 
     /** 当前连接的服务器地址 */
     @JvmStatic
@@ -81,9 +101,9 @@ object Api {
         return h.trimEnd('/')
     }
 
-    /** 排序字段：这台实例不认 create_date（直接 400），它叫 created_at */
+    /** 排序字段：个人库实例不认 create_date（直接 400），它叫 created_at */
     private fun orderParam(): String =
-        if (isGuestHost(HOST) && order == "create_date") "created_at" else order
+        if (isPersonalHost(HOST) && order == "create_date") "created_at" else order
 
     private val okHttpClient: OkHttpClient = HttpClientManager.getPacEnabledClient()
 
@@ -281,7 +301,7 @@ object Api {
     @JvmStatic
     fun doGetWork(keyword: String, page: Int, callback: JSONObjectCallback?) {
         // 免账号实例的搜索是查询参数形式：/api/search?keyword=xxx（路径形式会 404）
-        val url = if (isGuestHost(HOST)) {
+        val url = if (isPersonalHost(HOST)) {
             val kw = java.net.URLEncoder.encode(keyword, "UTF-8")
             "${HOST}/api/search?keyword=${kw}&order=${orderParam()}&sort=${makeSort()}&page=${page}"
         } else {

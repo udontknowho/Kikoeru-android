@@ -62,7 +62,7 @@ class UserSwitchActivity : BaseActivity() {
             .setTitle(R.string.add_builtin_server)
             .setItems(hosts) { _, which ->
                 val host = hosts[which]
-                if (Api.isGuestHost(host)) {
+                if (Api.isNoTokenHost(host)) {
                     UserRepository.getInstance().saveGuestUser(host) {
                         runOnUiThread {
                             stopService(Intent(this@UserSwitchActivity, AudioService::class.java))
@@ -175,10 +175,11 @@ class UserSwitchActivity : BaseActivity() {
                     holder.tvName.setText(user.getName())
                 }
 
-                holder.tvServer.setText(
-                    if (Api.isGuestHost(user.getHost())) user.getHost() + "  ·  " + getString(R.string.user_enter)
-                    else user.getHost()
-                )
+                holder.tvServer.setText(when (Api.hostKind(user.getHost())) {
+                    Api.HostKind.NO_TOKEN -> user.getHost() + "  ·  " + getString(R.string.user_enter)
+                    Api.HostKind.GUEST_TOKEN -> user.getHost() + "  ·  " + getString(R.string.user_guest)
+                    else -> user.getHost()
+                })
                 holder.ibDelete.setOnClickListener(object : View.OnClickListener {
                     override fun onClick(v: View?) {
                         notifyItemRemoved(position)
@@ -198,8 +199,8 @@ class UserSwitchActivity : BaseActivity() {
                 })
                 holder.ibRefresh.setOnClickListener(object : View.OnClickListener {
                     override fun onClick(v: View?) {
-                        // 免账号站点没有 token 可刷
-                        if (Api.isGuestHost(user.getHost())) {
+                        // 免 token 的站点没有 token 可刷
+                        if (Api.isNoTokenHost(user.getHost())) {
                             Toast.makeText(this@UserSwitchActivity, R.string.guest_no_token, Toast.LENGTH_SHORT).show()
                             return
                         }
