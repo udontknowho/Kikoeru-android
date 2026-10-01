@@ -40,6 +40,13 @@ public class UserRepository {
      * （这类个人库的 POST 会被 Cloudflare 挡成 HTML，而且本来也不需要 token）
      */
     public void saveGuestUser(String host) {
+        saveGuestUser(host, null);
+    }
+
+    /**
+     * @param onDone 插入完成（currentUserId 已设）后回调，可为 null
+     */
+    public void saveGuestUser(String host, Runnable onDone) {
         User user = new User();
         user.setName("guest");
         user.setPassword("");
@@ -51,6 +58,9 @@ public class UserRepository {
             public void run() {
                 Api.init("", host);
                 App.getInstance().setCurrentUserId(user.getId());
+                if (onDone != null) {
+                    onDone.run();
+                }
             }
         });
     }

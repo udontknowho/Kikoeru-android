@@ -89,6 +89,7 @@
     <string name="user_guest">Guest</string>
     <string name="user_sign_in">Sign In</string>
     <string name="user_enter">Enter (no account)</string>
+    <string name="add_builtin_server">Built-in sites</string>
     <string name="guest_no_token">This server needs no account</string>
     <string name="user_sign_up">Sign Up</string>
     <string name="cover_image">Cover image</string>

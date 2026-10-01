@@ -53,6 +53,27 @@ object Api {
     @JvmStatic
     fun currentHost(): String = HOST
 
+    /**
+     * 规整服务器地址：用户很容易把网页地址一起粘进来（比如 https://asmr.unikon.art/works），
+     * 而接口根在主机上，带上路径会变成 .../works/api/works → 404。
+     */
+    @JvmStatic
+    fun normalizeHost(host: String): String {
+        var h = host.trim()
+        if (!h.startsWith("http://") && !h.startsWith("https://")) {
+            // 自建服务器多半是 http + 端口，公网域名默认走 https
+            val looksLocal = h.startsWith("localhost") || h.startsWith("127.") ||
+                    h.startsWith("192.168.") || h.startsWith("10.") || h.contains(":")
+            h = (if (looksLocal) "http://" else "https://") + h
+        }
+        // 只削掉网页路由后缀，别把自建服务器部署在子路径的情况弄坏
+        h = h.replace(
+            Regex("/(works|tags|vas|circles|playlists|favourites|progress|search|about)(/.*)?$", RegexOption.IGNORE_CASE),
+            ""
+        )
+        return h.trimEnd('/')
+    }
+
     /** 排序字段：这台实例不认 create_date（直接 400），它叫 created_at */
     private fun orderParam(): String =
         if (isGuestHost(HOST) && order == "create_date") "created_at" else order
@@ -63,11 +84,7 @@ object Api {
     fun init(tokenStr: String, host: String) {
         token = tokenStr
         authorization = String.format("Bearer %s", tokenStr)
-        if (host.startsWith("http")) {
-            HOST = host
-        } else {
-            HOST = String.format(Locale.US, "http://%s", host)
-        }
+        HOST = normalizeHost(host)
         subtitle = App.getInstance().getValue(App.CONFIG_ONLY_DISPLAY_LRC, 1).toInt()
         order = App.getInstance().getValue(App.CONFIG_ORDER, "id")
         sort = App.getInstance().getValue(App.CONFIG_SORT, 0).toInt()

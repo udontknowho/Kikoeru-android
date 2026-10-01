@@ -7,7 +7,9 @@ import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Filter
 import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -116,7 +118,28 @@ class LoginAccountActivity : BaseActivity() {
 
         // 服务器下拉：两个内置站点；想用别的地址直接手上改就行（等于另存一个）
         if (etServer is MaterialAutoCompleteTextView) {
-            etServer.setSimpleItems(presetHosts)
+            // 默认的过滤会拿当前文本去筛，字段里已经有完整地址时列表会什么都显不出来，
+            // 所以换成一个“永远全显示”的 adapter，并在点击/获得焦点时主动展开
+            etServer.setAdapter(object : ArrayAdapter<String>(
+                this, android.R.layout.simple_list_item_1, presetHosts
+            ) {
+                override fun getFilter(): Filter = object : Filter() {
+                    override fun performFiltering(constraint: CharSequence?): FilterResults =
+                        FilterResults().apply {
+                            values = presetHosts.toList()
+                            count = presetHosts.size
+                        }
+
+                    override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                        notifyDataSetChanged()
+                    }
+                }
+            })
+            etServer.threshold = 0
+            etServer.setOnClickListener { etServer.showDropDown() }
+            etServer.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) etServer.showDropDown()
+            }
         }
         etServer.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -153,7 +176,8 @@ class LoginAccountActivity : BaseActivity() {
             viewModel!!.setPassword(etPassword.getText().toString().trim { it <= ' ' })
         }
         if (etServer != null) {
-            viewModel!!.setHost(etServer.getText().toString().trim { it <= ' ' })
+            // 顺手把粘进来的网页路径(/works 之类)削掉
+            viewModel!!.setHost(Api.normalizeHost(etServer.getText().toString()))
         }
     }
 

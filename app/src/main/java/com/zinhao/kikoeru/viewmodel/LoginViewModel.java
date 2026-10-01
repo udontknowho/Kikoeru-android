@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
+import com.zinhao.kikoeru.Api;
 import com.zinhao.kikoeru.data.model.LoginResponse;
 import com.zinhao.kikoeru.data.model.Result;
 import com.zinhao.kikoeru.data.repository.UserRepository;
@@ -93,11 +94,8 @@ public class LoginViewModel extends ViewModel {
             return;
         }
 
-        // 确保 host 有协议前缀
-        String hostUrl = server.trim();
-        if (!hostUrl.startsWith("http://") && !hostUrl.startsWith("https://")) {
-            hostUrl = "http://" + hostUrl;
-        }
+        // 统一规整（补协议、削掉粘进来的网页路径）
+        String hostUrl = Api.normalizeHost(server);
 
         isLoading.setValue(true);
         errorMessage.setValue(null);
@@ -150,10 +148,7 @@ public class LoginViewModel extends ViewModel {
             errorMessage.setValue("请输入服务器地址");
             return;
         }
-        String hostUrl = server.trim();
-        if (!hostUrl.startsWith("http://") && !hostUrl.startsWith("https://")) {
-            hostUrl = "https://" + hostUrl;
-        }
+        String hostUrl = Api.normalizeHost(server);
         errorMessage.setValue(null);
         userRepository.saveGuestUser(hostUrl);
         loginSuccess.setValue(true);

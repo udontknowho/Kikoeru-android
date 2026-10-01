@@ -17,6 +17,7 @@ import com.koushikdutta.async.http.AsyncHttpClient.JSONObjectCallback
 import com.koushikdutta.async.http.AsyncHttpResponse
 import com.zinhao.kikoeru.Api.doGetToken
 import com.zinhao.kikoeru.Api.init
+import com.zinhao.kikoeru.data.repository.UserRepository
 import com.zinhao.kikoeru.databinding.ActivityUserSwitchBinding
 import com.zinhao.kikoeru.db.User
 import org.json.JSONException
@@ -40,6 +41,11 @@ class UserSwitchActivity : BaseActivity() {
                 finish()
             }
         })
+        binding!!.buttonPreset.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View) {
+                showBuiltinSites()
+            }
+        })
         adapter = UserAdapter()
         binding!!.recyclerView.setAdapter(adapter)
         binding!!.recyclerView.setLayoutManager(LinearLayoutManager(this@UserSwitchActivity))
@@ -47,6 +53,29 @@ class UserSwitchActivity : BaseActivity() {
             startActivity(Intent(this@UserSwitchActivity, LoginAccountActivity::class.java))
             finish()
         }
+    }
+
+    /** 内置站点：免账号的直接建号切过去，要账号的跳登录页 */
+    private fun showBuiltinSites() {
+        val hosts = arrayOf("https://api.asmr.one", "https://asmr.unikon.art")
+        AlertDialog.Builder(this, R.style.RoundedAlertDialog)
+            .setTitle(R.string.add_builtin_server)
+            .setItems(hosts) { _, which ->
+                val host = hosts[which]
+                if (Api.isGuestHost(host)) {
+                    UserRepository.getInstance().saveGuestUser(host) {
+                        runOnUiThread {
+                            stopService(Intent(this@UserSwitchActivity, AudioService::class.java))
+                            startActivity(Intent(this@UserSwitchActivity, LauncherActivity::class.java))
+                            finish()
+                        }
+                    }
+                } else {
+                    startActivity(Intent(this, LoginAccountActivity::class.java))
+                    finish()
+                }
+            }
+            .show()
     }
 
     fun switchUser(user: User) {
