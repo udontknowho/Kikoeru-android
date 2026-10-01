@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import com.zinhao.kikoeru.databinding.ActivityMoreBinding;
+import com.zinhao.kikoeru.db.User;
 import com.zinhao.kikoeru.network.HttpClientManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,12 +49,16 @@ public class MoreActivity extends BaseActivity implements CompoundButton.OnCheck
     private View itemLrcBg;
     private TextView tvLrcBg;
     private ActivityMoreBinding viewBinding;
+    private TextView tvThemeMode;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewBinding = ActivityMoreBinding.inflate(getLayoutInflater());
         setContentView(viewBinding.getRoot());
         setSupportActionBar(viewBinding.toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
         setSafeArea(viewBinding.appBarLayout, new InsetReady() {
             @Override
             public void onInsetReady(@NotNull Insets insets) {
@@ -192,6 +197,73 @@ public class MoreActivity extends BaseActivity implements CompoundButton.OnCheck
         });
         viewBinding.cbHomeTab.setChecked(App.getInstance().isUseNewLayout());
         viewBinding.cbHomeTab.setOnCheckedChangeListener(this);
+
+        // 主题模式
+        tvThemeMode = viewBinding.tvThemeMode;
+        updateThemeModeLabel();
+        viewBinding.themeRow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showThemeModeDialog();
+            }
+        });
+
+        // 当前服务器 + 切服务器（那个页面里能选内置站点，也能自己填地址）
+        User current = App.getInstance().currentUser();
+        if (current != null) {
+            viewBinding.tvServerName.setText(current.getHost());
+        } else {
+            viewBinding.tvServerName.setText(Api.currentHost());
+        }
+        viewBinding.switchServer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MoreActivity.this, UserSwitchActivity.class));
+                finish();
+            }
+        });
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
+    private void updateThemeModeLabel() {
+        if (tvThemeMode == null) return;
+        switch (App.getInstance().getNightMode()) {
+            case 1:
+                tvThemeMode.setText(R.string.theme_light);
+                break;
+            case 2:
+                tvThemeMode.setText(R.string.theme_dark);
+                break;
+            default:
+                tvThemeMode.setText(R.string.theme_follow_system);
+        }
+    }
+
+    /** 主题模式：跟随系统 / 浅色 / 深色 */
+    private void showThemeModeDialog() {
+        final int[] modes = {0, 1, 2};
+        final String[] items = {
+                getString(R.string.theme_follow_system),
+                getString(R.string.theme_light),
+                getString(R.string.theme_dark)
+        };
+        int checked = Math.max(0, Math.min(2, App.getInstance().getNightMode()));
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.RoundedAlertDialog);
+        builder.setTitle(R.string.theme_mode);
+        builder.setSingleChoiceItems(items, checked, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                App.getInstance().setNightMode(modes[which]);
+                updateThemeModeLabel();
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
     @Override

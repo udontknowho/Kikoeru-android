@@ -5,4 +5,13 @@
     <color name="second_color">#5e473f</color>
     <color name="third_color">#3b2e37</color>
     <color name="forth_color">#372c45</color>
+
+    <!-- 卡片式界面：深灰绿底，不用纯黑 -->
+    <color name="screen_bg">#121A16</color>
+    <color name="card_surface">#1B2621</color>
+    <color name="icon_circle_bg">#22322A</color>
+    <color name="icon_tint">#8ED8AE</color>
+    <color name="ink_primary">#E7EDE9</color>
+    <color name="ink_secondary">#94A39A</color>
+    <color name="divider_color">#243029</color>
 </resources>

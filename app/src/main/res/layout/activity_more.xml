@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/screen_bg"
     android:orientation="vertical"
     tools:context=".MoreActivity">
 
@@ -12,7 +13,7 @@
                                                      app:layout_constraintStart_toStartOf="parent"
                                                      app:layout_constraintEnd_toEndOf="parent"
                                                      app:layout_constraintTop_toTopOf="parent"
-                                                     android:background="?attr/colorSurface"
+                                                     android:background="@color/screen_bg"
                                                      android:id="@+id/appBarLayout">
         <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -24,434 +25,466 @@
     <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:scrollbars="none">
 
         <LinearLayout android:id="@+id/content"
                       android:layout_width="match_parent"
                       android:layout_height="wrap_content"
-                      android:layout_marginStart="8dp"
-                      android:layout_marginEnd="8dp"
+                      android:layout_marginStart="12dp"
+                      android:layout_marginEnd="12dp"
                       android:orientation="vertical"
-                      android:paddingBottom="24dp">
+                      android:paddingBottom="28dp">
 
-            <!-- ============ 播放 ============ -->
+            <!-- ==================== 外观 ==================== -->
             <TextView
                     style="@style/Theme.Kikoeru.SettingsGroup"
-                    android:text="@string/group_playback"/>
-
-            <RelativeLayout
-                    android:id="@+id/relativeLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-
-                <TextView
-                        android:id="@+id/textView6"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawablePadding="16dp"
-                        android:gravity="center"
-                        android:drawableStart="@drawable/ic_baseline_play_arrow_24"
-                        android:drawableTint="@color/black"
-                        android:text="@string/only_load_has_lrc"
-                        android:textSize="16sp"/>
-
-                <CheckBox
-                        android:id="@+id/checkBox"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text=""/>
-            </RelativeLayout>
-
-            <!-- ============ 字幕悬浮窗 ============ -->
-            <TextView
-                    style="@style/Theme.Kikoeru.SettingsGroup"
-                    android:text="@string/group_subtitle"/>
-
-            <RelativeLayout
-                    android:id="@+id/lrcSize"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-
-                <TextView
-                        android:id="@+id/textView20"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawablePadding="16dp"
-                        android:drawableStart="@drawable/ic_baseline_text_fields_24"
-                        android:drawableTint="@color/black"
-                        android:gravity="center"
-                        android:text="@string/lrc_text_size"
-                        android:textSize="16sp"/>
-
-                <TextView
-                        android:id="@+id/tvLrcSize"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text="36sp"
-                        android:textColor="@color/gray"
-                        android:textSize="14sp"/>
-            </RelativeLayout>
-
-            <RelativeLayout
-                    android:id="@+id/lrcColor"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-
-                <TextView
-                        android:id="@+id/textView21"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawablePadding="16dp"
-                        android:drawableStart="@drawable/ic_baseline_text_fields_24"
-                        android:drawableTint="@color/black"
-                        android:gravity="center"
-                        android:text="@string/lrc_text_color"
-                        android:textSize="16sp"/>
-
-                <TextView
-                        android:id="@+id/tvLrcColor"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text="#FFFFFF"
-                        android:textSize="14sp"/>
-            </RelativeLayout>
-
-            <RelativeLayout
-                    android:id="@+id/lrcAlpha"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-
-                <TextView
-                        android:id="@+id/textView22"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawablePadding="16dp"
-                        android:drawableStart="@drawable/ic_baseline_text_fields_24"
-                        android:drawableTint="@color/black"
-                        android:gravity="center"
-                        android:text="@string/lrc_text_alpha"
-                        android:textSize="16sp"/>
-
-                <TextView
-                        android:id="@+id/tvLrcAlpha"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text="100%"
-                        android:textColor="@color/gray"
-                        android:textSize="14sp"/>
-            </RelativeLayout>
-
-            <RelativeLayout
-                    android:id="@+id/lrcBg"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-
-                <TextView
-                        android:id="@+id/textView23"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawablePadding="16dp"
-                        android:drawableStart="@drawable/ic_baseline_text_fields_24"
-                        android:drawableTint="@color/black"
-                        android:gravity="center"
-                        android:text="@string/lrc_text_bg"
-                        android:textSize="16sp"/>
-
-                <TextView
-                        android:id="@+id/tvLrcBg"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text="@string/lrc_bg_none"
-                        android:textColor="@color/gray"
-                        android:textSize="14sp"/>
-            </RelativeLayout>
-
-            <!-- ============ 下载与存储 ============ -->
-            <TextView
-                    style="@style/Theme.Kikoeru.SettingsGroup"
-                    android:text="@string/group_storage"/>
-
-            <RelativeLayout
-                    android:id="@+id/saveExternal"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-
-                <TextView
-                        android:id="@+id/textView16"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawablePadding="16dp"
-                        android:drawableStart="@drawable/ic_baseline_storage_24"
-                        android:drawableTint="@color/black"
-                        android:gravity="center"
-                        android:text="@string/saveAtExternal"
-                        android:textSize="16sp"/>
-
-                <CheckBox
-                        android:id="@+id/checkBox3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text=""/>
-            </RelativeLayout>
-
-            <!-- ============ 网络 ============ -->
-            <TextView
-                    style="@style/Theme.Kikoeru.SettingsGroup"
-                    android:text="@string/group_network"/>
-
-            <RelativeLayout
-                    android:id="@+id/proxySwitch"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-
-                <TextView
-                        android:id="@+id/textView18"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawablePadding="16dp"
-                        android:drawableStart="@drawable/ic_baseline_loop_main_24"
-                        android:drawableTint="@color/black"
-                        android:gravity="center"
-                        android:text="@string/proxy_enabled"
-                        android:textSize="16sp"/>
-
-                <CheckBox
-                        android:id="@+id/cbProxy"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text=""/>
-            </RelativeLayout>
-
-            <RelativeLayout
-                    android:id="@+id/proxyAddr"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-
-                <TextView
-                        android:id="@+id/textView19"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawablePadding="16dp"
-                        android:drawableStart="@drawable/ic_baseline_loop_main_24"
-                        android:drawableTint="@color/black"
-                        android:gravity="center"
-                        android:text="@string/proxy_addr"
-                        android:textSize="16sp"/>
-
-                <TextView
-                        android:id="@+id/tvProxyAddr"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text="127.0.0.1:7890"
-                        android:textColor="@color/gray"
-                        android:textSize="14sp"/>
-            </RelativeLayout>
-
-            <!-- ============ 隐私与安全 ============ -->
-            <TextView
-                    style="@style/Theme.Kikoeru.SettingsGroup"
-                    android:text="@string/group_privacy"/>
-
-            <RelativeLayout
-                    android:id="@+id/appLock"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-
-                <TextView
-                        android:id="@+id/textView17"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawablePadding="16dp"
-                        android:drawableStart="@drawable/ic_baseline_lock_24"
-                        android:drawableTint="@color/black"
-                        android:gravity="center"
-                        android:text="@string/app_lock"
-                        android:textSize="16sp"/>
-
-                <CheckBox
-                        android:id="@+id/cbAppLock"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text=""/>
-            </RelativeLayout>
-
-            <!-- ============ 界面 ============ -->
-            <TextView
-                    style="@style/Theme.Kikoeru.SettingsGroup"
+                    android:paddingStart="8dp"
                     android:text="@string/group_appearance"/>
 
-            <RelativeLayout
-                    android:id="@+id/rlHomeTab"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
+            <LinearLayout
+                    style="@style/Theme.Kikoeru.SettingsCard">
 
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawablePadding="16dp"
-                        android:drawableStart="@drawable/ic_baseline_view_column_24"
-                        android:drawableTint="@color/black"
-                        android:text="@string/new_home_layout"
-                        android:textSize="16sp"/>
+                <LinearLayout
+                        android:id="@+id/themeRow"
+                        style="@style/Theme.Kikoeru.SettingsRow">
 
-                <CheckBox
-                        android:id="@+id/cbHomeTab"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text=""/>
-            </RelativeLayout>
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/theme_mode"
+                            android:src="@drawable/ic_baseline_light_mode_24"/>
 
-            <!-- ============ 其他 ============ -->
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/theme_mode"/>
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowSub"
+                                android:text="@string/theme_mode_desc"/>
+                    </LinearLayout>
+
+                    <TextView
+                            android:id="@+id/tvThemeMode"
+                            style="@style/Theme.Kikoeru.SettingsRowStatus"
+                            tools:text="跟随系统"/>
+
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
+
+                <View style="@style/Theme.Kikoeru.SettingsDivider"/>
+
+                <LinearLayout
+                        android:id="@+id/rlHomeTab"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/new_home_layout"
+                            android:src="@drawable/ic_baseline_view_column_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/new_home_layout"/>
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowSub"
+                                android:text="@string/new_home_layout_desc"/>
+                    </LinearLayout>
+
+                    <CheckBox
+                            android:id="@+id/cbHomeTab"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ==================== 服务器 ==================== -->
             <TextView
                     style="@style/Theme.Kikoeru.SettingsGroup"
+                    android:paddingStart="8dp"
+                    android:text="@string/group_server"/>
+
+            <LinearLayout
+                    style="@style/Theme.Kikoeru.SettingsCard">
+
+                <LinearLayout
+                        android:id="@+id/switchServer"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/switch_server"
+                            android:src="@drawable/ic_baseline_swap_horiz_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/switch_server"/>
+                        <TextView
+                                android:id="@+id/tvServerName"
+                                style="@style/Theme.Kikoeru.SettingsRowSub"
+                                tools:text="asmr.unikon.art"/>
+                    </LinearLayout>
+
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ==================== 播放与字幕 ==================== -->
+            <TextView
+                    style="@style/Theme.Kikoeru.SettingsGroup"
+                    android:paddingStart="8dp"
+                    android:text="@string/group_playback"/>
+
+            <LinearLayout
+                    style="@style/Theme.Kikoeru.SettingsCard">
+
+                <LinearLayout
+                        android:id="@+id/relativeLayout"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/only_load_has_lrc"
+                            android:src="@drawable/ic_baseline_text_fields_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/only_load_has_lrc"/>
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowSub"
+                                android:text="@string/only_load_has_lrc_desc"/>
+                    </LinearLayout>
+
+                    <CheckBox
+                            android:id="@+id/checkBox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                </LinearLayout>
+
+                <View style="@style/Theme.Kikoeru.SettingsDivider"/>
+
+                <LinearLayout
+                        android:id="@+id/lrcSize"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/lrc_text_size"
+                            android:src="@drawable/ic_baseline_format_size_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/lrc_text_size"/>
+                    </LinearLayout>
+
+                    <TextView
+                            android:id="@+id/tvLrcSize"
+                            style="@style/Theme.Kikoeru.SettingsRowStatus"
+                            tools:text="36sp"/>
+
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
+
+                <View style="@style/Theme.Kikoeru.SettingsDivider"/>
+
+                <LinearLayout
+                        android:id="@+id/lrcColor"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/lrc_text_color"
+                            android:src="@drawable/ic_baseline_palette_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/lrc_text_color"/>
+                    </LinearLayout>
+
+                    <TextView
+                            android:id="@+id/tvLrcColor"
+                            style="@style/Theme.Kikoeru.SettingsRowStatus"
+                            tools:text="#FFFFFF"/>
+
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
+
+                <View style="@style/Theme.Kikoeru.SettingsDivider"/>
+
+                <LinearLayout
+                        android:id="@+id/lrcAlpha"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/lrc_text_alpha"
+                            android:src="@drawable/ic_baseline_opacity_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/lrc_text_alpha"/>
+                    </LinearLayout>
+
+                    <TextView
+                            android:id="@+id/tvLrcAlpha"
+                            style="@style/Theme.Kikoeru.SettingsRowStatus"
+                            tools:text="100%"/>
+
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
+
+                <View style="@style/Theme.Kikoeru.SettingsDivider"/>
+
+                <LinearLayout
+                        android:id="@+id/lrcBg"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/lrc_text_bg"
+                            android:src="@drawable/ic_baseline_layers_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/lrc_text_bg"/>
+                    </LinearLayout>
+
+                    <TextView
+                            android:id="@+id/tvLrcBg"
+                            style="@style/Theme.Kikoeru.SettingsRowStatus"
+                            tools:text="无"/>
+
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ==================== 下载与存储 ==================== -->
+            <TextView
+                    style="@style/Theme.Kikoeru.SettingsGroup"
+                    android:paddingStart="8dp"
+                    android:text="@string/group_storage"/>
+
+            <LinearLayout
+                    style="@style/Theme.Kikoeru.SettingsCard">
+
+                <LinearLayout
+                        android:id="@+id/saveExternal"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/saveAtExternal"
+                            android:src="@drawable/ic_baseline_storage_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/saveAtExternal"/>
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowSub"
+                                android:text="@string/save_at_external_desc"/>
+                    </LinearLayout>
+
+                    <CheckBox
+                            android:id="@+id/checkBox3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ==================== 代理 ==================== -->
+            <TextView
+                    style="@style/Theme.Kikoeru.SettingsGroup"
+                    android:paddingStart="8dp"
+                    android:text="@string/group_network"/>
+
+            <LinearLayout
+                    style="@style/Theme.Kikoeru.SettingsCard">
+
+                <LinearLayout
+                        android:id="@+id/proxySwitch"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/proxy_enabled"
+                            android:src="@drawable/ic_baseline_loop_main_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/proxy_enabled"/>
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowSub"
+                                android:text="@string/proxy_desc"/>
+                    </LinearLayout>
+
+                    <CheckBox
+                            android:id="@+id/cbProxy"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                </LinearLayout>
+
+                <View style="@style/Theme.Kikoeru.SettingsDivider"/>
+
+                <LinearLayout
+                        android:id="@+id/proxyAddr"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/proxy_addr"
+                            android:src="@drawable/ic_baseline_language_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/proxy_addr"/>
+                    </LinearLayout>
+
+                    <TextView
+                            android:id="@+id/tvProxyAddr"
+                            style="@style/Theme.Kikoeru.SettingsRowStatus"
+                            tools:text="127.0.0.1:7890"/>
+
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ==================== 隐私与安全 ==================== -->
+            <TextView
+                    style="@style/Theme.Kikoeru.SettingsGroup"
+                    android:paddingStart="8dp"
+                    android:text="@string/group_privacy"/>
+
+            <LinearLayout
+                    style="@style/Theme.Kikoeru.SettingsCard">
+
+                <LinearLayout
+                        android:id="@+id/appLock"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/app_lock"
+                            android:src="@drawable/ic_baseline_lock_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/app_lock"/>
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowSub"
+                                android:text="@string/app_lock_desc"/>
+                    </LinearLayout>
+
+                    <CheckBox
+                            android:id="@+id/cbAppLock"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ==================== 其他 ==================== -->
+            <TextView
+                    style="@style/Theme.Kikoeru.SettingsGroup"
+                    android:paddingStart="8dp"
                     android:text="@string/group_others"/>
 
-            <RelativeLayout
-                    android:id="@+id/about"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
+            <LinearLayout
+                    style="@style/Theme.Kikoeru.SettingsCard">
 
-                <TextView
-                        android:id="@+id/textView11"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawablePadding="16dp"
-                        android:text="@string/about"
-                        android:drawableTint="@color/black"
-                        android:drawableStart="@drawable/ic_baseline_info_24"
-                        android:textSize="16sp"/>
+                <LinearLayout
+                        android:id="@+id/license"
+                        style="@style/Theme.Kikoeru.SettingsRow">
 
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text="&#8250;"
-                        android:textColor="@color/gray"
-                        android:textSize="20sp"/>
-            </RelativeLayout>
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/opensource_license"
+                            android:src="@drawable/ic_baseline_description_24"/>
 
-            <RelativeLayout
-                    android:id="@+id/license"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/opensource_license"/>
+                    </LinearLayout>
 
-                <TextView
-                        android:id="@+id/textView10"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawableTint="@color/black"
-                        android:drawablePadding="16dp"
-                        android:drawableStart="@drawable/ic_baseline_insert_drive_file"
-                        android:text="@string/opensource_license"
-                        android:textSize="16sp"/>
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
 
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text="&#8250;"
-                        android:textColor="@color/gray"
-                        android:textSize="20sp"/>
-            </RelativeLayout>
+                <View style="@style/Theme.Kikoeru.SettingsDivider"/>
 
-            <RelativeLayout
-                    android:id="@+id/debug"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
+                <LinearLayout
+                        android:id="@+id/debug"
+                        style="@style/Theme.Kikoeru.SettingsRow">
 
-                <TextView
-                        android:id="@+id/textView12"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawableTint="@color/black"
-                        android:drawablePadding="16dp"
-                        android:drawableStart="@drawable/ic_baseline_more_horiz_24"
-                        android:gravity="center"
-                        android:text="@string/debug_mode"
-                        android:textSize="16sp"/>
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/debug_mode"
+                            android:src="@drawable/ic_baseline_bug_report_24"/>
 
-                <CheckBox
-                        android:id="@+id/checkBox1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text=""/>
-            </RelativeLayout>
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/debug_mode"/>
+                    </LinearLayout>
+
+                    <CheckBox
+                            android:id="@+id/checkBox1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""/>
+                </LinearLayout>
+
+                <View style="@style/Theme.Kikoeru.SettingsDivider"/>
+
+                <LinearLayout
+                        android:id="@+id/about"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/about"
+                            android:src="@drawable/ic_baseline_info_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/about"/>
+                    </LinearLayout>
+
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

@@ -29,4 +29,13 @@
 
     <!-- 验证遮罩的背景:不透明,保证后面的内容一点不露 -->
     <color name="lock_bg">#FF14171C</color>
+
+    <!-- 卡片式界面用的语义色（深色在 values-night/colors.xml 里覆盖） -->
+    <color name="screen_bg">#F5F7F6</color>
+    <color name="card_surface">#FFFFFF</color>
+    <color name="icon_circle_bg">#E7F2EC</color>
+    <color name="icon_tint">#2E6B4F</color>
+    <color name="ink_primary">#333333</color>
+    <color name="ink_secondary">#8A8F8C</color>
+    <color name="divider_color">#EEF1EF</color>
 </resources>

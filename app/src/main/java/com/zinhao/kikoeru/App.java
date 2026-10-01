@@ -14,6 +14,7 @@ import android.util.TypedValue;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.room.Room;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
@@ -38,6 +39,8 @@ public class App extends Application implements Application.ActivityLifecycleCal
     public static final String CONFIG_UPDATE_TIME = "update_time";
     public static final String CONFIG_USER_DATABASE_ID = "current_user_database_id";
     public static final String CONFIG_LAYOUT_TYPE = "layout_type";
+    /** 主题模式：0 跟随系统 1 浅色 2 深色 */
+    public static final String CONFIG_NIGHT_MODE = "night_mode";
     public static final String CONFIG_ONLY_DISPLAY_LRC = "only_display_lrc";
     public static final String CONFIG_SORT = "sort";
     public static final String CONFIG_ORDER = "order";
@@ -56,6 +59,27 @@ public class App extends Application implements Application.ActivityLifecycleCal
     /** 桌面字幕字号(sp),设置页里可调 */
     public int getLrcTextSize() {
         return (int) getValue(CONFIG_LRC_TEXT_SIZE, 36L);
+    }
+
+    /** 取主题模式（0 跟随系统 / 1 浅色 / 2 深色） */
+    public int getNightMode() {
+        return (int) getValue(CONFIG_NIGHT_MODE, 0L);
+    }
+
+    /** 设主题模式：存下来并立刻应用（AppCompat 会自己重建界面） */
+    public void setNightMode(int mode) {
+        setValue(CONFIG_NIGHT_MODE, (long) mode);
+        AppCompatDelegate.setDefaultNightMode(toNightMode(mode));
+    }
+
+    public static int toNightMode(int mode) {
+        if (mode == 1) {
+            return AppCompatDelegate.MODE_NIGHT_NO;
+        }
+        if (mode == 2) {
+            return AppCompatDelegate.MODE_NIGHT_YES;
+        }
+        return AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
     }
 
     /** 字幕文字颜色(RGB,透明度单独存) */
@@ -236,6 +260,8 @@ public class App extends Application implements Application.ActivityLifecycleCal
         super.onCreate();
         instance = this;
         installCrashLogger();
+        // 主题模式要在任何 Activity 创建前应用
+        AppCompatDelegate.setDefaultNightMode(toNightMode((int) getValue(CONFIG_NIGHT_MODE, 0)));
         registerActivityLifecycleCallbacks(this);
         AppDatabase appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class,"app.db")
                 .addMigrations(AppDatabase.MIGRATION_1_2)
