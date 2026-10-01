@@ -9,6 +9,7 @@ import android.os.Environment;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import com.zinhao.kikoeru.databinding.ActivityMoreBinding;
@@ -27,6 +28,8 @@ public class MoreActivity extends BaseActivity implements CompoundButton.OnCheck
 
     private View itemDebug;
     private CheckBox cbDebug;
+    private View itemAppLock;
+    private CheckBox cbAppLock;
     private ActivityMoreBinding viewBinding;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +93,17 @@ public class MoreActivity extends BaseActivity implements CompoundButton.OnCheck
         cbDebug.setChecked(App.getInstance().isAppDebug());
         cbDebug.setOnCheckedChangeListener(this);
 
+        itemAppLock = viewBinding.appLock;
+        itemAppLock.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cbAppLock.toggle();
+            }
+        });
+        cbAppLock = viewBinding.cbAppLock;
+        cbAppLock.setChecked(AppLock.isEnabled());
+        cbAppLock.setOnCheckedChangeListener(this);
+
 
         viewBinding.rlHomeTab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,6 +125,16 @@ public class MoreActivity extends BaseActivity implements CompoundButton.OnCheck
 
         if (compoundButton == cbDebug) {
             App.getInstance().setAppDebug(b);
+        }
+
+        if (compoundButton == cbAppLock) {
+            // 没指纹也没锁屏密码就不让开,不然是自己把自己锁在外面
+            if (b && !AppLock.isAvailable()) {
+                Toast.makeText(this, R.string.app_lock_unavailable, Toast.LENGTH_LONG).show();
+                cbAppLock.toggle();
+                return;
+            }
+            AppLock.setEnabled(b);
         }
 
         if( compoundButton == viewBinding.cbHomeTab ){

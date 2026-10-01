@@ -51,6 +51,10 @@
     <string name="not_download">have not download</string>
     <string name="download">Download</string>
     <string name="debug_mode">Debug mode</string>
+    <string name="app_lock">Verify when opening</string>
+    <string name="app_lock_title">Unlock</string>
+    <string name="app_lock_subtitle">Verify yourself to continue</string>
+    <string name="app_lock_unavailable">Set a screen lock or fingerprint first</string>
     <string name="savePath">Save position</string>
     <string name="saveAtExternal">Save at external storage</string>
     <string name="search">Search</string>

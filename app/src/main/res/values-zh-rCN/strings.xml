@@ -37,6 +37,10 @@
     <string name="not_download">未下载</string>
     <string name="download">下载</string>
     <string name="debug_mode">调试模式</string>
+    <string name="app_lock">打开时需要验证</string>
+    <string name="app_lock_title">解锁</string>
+    <string name="app_lock_subtitle">验证身份后继续</string>
+    <string name="app_lock_unavailable">请先设置锁屏密码或指纹</string>
     <string name="savePath">存储位置</string>
     <string name="saveAtExternal">保存到外部文件夹</string>
     <string name="search">search</string>

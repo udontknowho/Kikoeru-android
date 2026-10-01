@@ -129,6 +129,40 @@
             </RelativeLayout>
 
             <RelativeLayout
+                    android:id="@+id/appLock"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/item_bg">
+
+                <TextView
+                        android:id="@+id/textView17"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="20dp"
+                        android:drawableStart="@drawable/ic_baseline_widgets_24"
+                        android:drawableTint="@color/black"
+                        android:gravity="center"
+                        android:text="@string/app_lock"
+                        android:textSize="16sp" />
+
+                <CheckBox
+                        android:id="@+id/cbAppLock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="20dp"
+                        android:text="" />
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/gray_80" />
+            </RelativeLayout>
+
+            <RelativeLayout
                     android:id="@+id/license"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"

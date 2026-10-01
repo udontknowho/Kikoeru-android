@@ -46,6 +46,8 @@ public class App extends Application implements Application.ActivityLifecycleCal
     private boolean saveExternal = false;
     private boolean appDebug = false;
     private boolean useNewLayout = false;
+    /** 已 started 的 Activity 数,归零说明 App 退到后台了 */
+    private int startedActivities = 0;
 
 
     private final List<User> allUsers = new ArrayList<>();
@@ -354,12 +356,14 @@ public class App extends Application implements Application.ActivityLifecycleCal
 
     @Override
     public void onActivityStarted(@NonNull Activity activity) {
-
+        startedActivities++;
     }
 
     @Override
     public void onActivityResumed(@NonNull Activity activity) {
-
+        if (AppLock.isEnabled() && !AppLock.isUnlocked()) {
+            AppLock.authenticate(activity);
+        }
     }
 
     @Override
@@ -369,7 +373,10 @@ public class App extends Application implements Application.ActivityLifecycleCal
 
     @Override
     public void onActivityStopped(@NonNull Activity activity) {
-
+        if (--startedActivities <= 0) {
+            startedActivities = 0;
+            AppLock.onBackground();
+        }
     }
 
     @Override

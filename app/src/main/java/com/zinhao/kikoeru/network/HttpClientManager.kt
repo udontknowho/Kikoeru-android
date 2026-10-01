@@ -50,22 +50,8 @@ object HttpClientManager {
                 return systemProxies
             }
 
-            //2. 如果系统罢工了（返回了 DIRECT/NO_PROXY），且不是访问你的局域网/本地地址
-            if (BuildConfig.DEBUG) {
-                //本地测试
-                val host = uri.getHost()
-                if (host != null && (host != "127.0.0.1") && !host.startsWith("192.168.")) {
-                    // 强制让 OkHttp 的流量去连接你的电脑代理（这里动态或硬编码你的电脑代理 IP）
-                    // 相当于在 App 内部实现了一套“手动代理”的兜底逻辑
-                    Log.i(TAG, "select:手动代理")
-                    return mutableListOf<Proxy?>(
-                        Proxy(Proxy.Type.HTTP, InetSocketAddress("192.168.31.253", 7890))
-                    )
-                }
-            }
-
-
-            // 3. 国内流量或局域网，直连
+            //3. 国内流量或局域网,直连(原来这里有一段只在 debug 包里生效、硬编码到作者内网
+            // 代理 192.168.31.253:7890 的兜底逻辑,已删除:换台设备就是必然超时)
             Log.i(TAG, "select:直连")
             return mutableListOf<Proxy?>(Proxy.NO_PROXY)
         }
