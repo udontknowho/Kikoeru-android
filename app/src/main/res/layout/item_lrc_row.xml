@@ -9,6 +9,7 @@
     <ImageView android:id="@+id/toHere"
             android:layout_width="wrap_content"
                android:layout_height="wrap_content"
+               android:tint="@color/white"
                android:src="@drawable/ic_baseline_play_arrow_24"/>
 
     <TextView

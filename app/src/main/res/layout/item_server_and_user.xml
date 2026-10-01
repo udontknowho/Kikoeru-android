@@ -1,49 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
                                                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   xmlns:tools="http://schemas.android.com/tools"
                                                    android:layout_width="match_parent"
-                                                   android:layout_margin="10dp"
-                                                   android:padding="10dp"
-                                                   android:background="@drawable/card_bg_work"
-                                                   android:elevation="18dp"
-                                                   android:layout_height="70dp">
+                                                   android:layout_height="wrap_content"
+                                                   android:layout_marginStart="12dp"
+                                                   android:layout_marginEnd="12dp"
+                                                   android:layout_marginTop="6dp"
+                                                   android:layout_marginBottom="6dp"
+                                                   android:background="@drawable/settings_card_bg"
+                                                   android:paddingStart="12dp"
+                                                   android:paddingEnd="6dp"
+                                                   android:paddingTop="10dp"
+                                                   android:paddingBottom="10dp">
+
+    <ImageView
+            android:id="@+id/ivServerIcon"
+            style="@style/Theme.Kikoeru.SettingsRowIcon"
+            android:contentDescription="@string/switch_server"
+            android:src="@drawable/ic_baseline_storage_24"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     <TextView
-        android:id="@+id/tvName"
-        android:layout_width="wrap_content"
-        android:layout_height="25dp"
-        android:layout_marginStart="8dp"
-        android:gravity="center_vertical"
-        android:text="Root"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:id="@+id/tvName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textColor="@color/ink_primary"
+            android:textSize="14.5sp"
+            app:layout_constraintStart_toEndOf="@+id/ivServerIcon"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton4"
+            app:layout_constraintTop_toTopOf="@+id/ivServerIcon"
+            tools:text="guest"/>
 
     <TextView
-        android:id="@+id/tvServer"
-        android:layout_width="wrap_content"
-        android:layout_height="25dp"
-        android:text="@string/project_kikoeru_android_url"
-        android:gravity="center_vertical"
-        app:layout_constraintStart_toStartOf="@+id/tvName"
-        app:layout_constraintTop_toBottomOf="@+id/tvName" />
+            android:id="@+id/tvServer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="3dp"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:textColor="@color/ink_secondary"
+            android:textSize="11.5sp"
+            app:layout_constraintStart_toEndOf="@+id/ivServerIcon"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton4"
+            app:layout_constraintTop_toBottomOf="@+id/tvName"
+            tools:text="https://asmr.unikon.art"/>
 
     <ImageButton
-        android:id="@+id/imageButton3"
-        android:layout_width="40dp"
-        android:layout_height="match_parent"
-        android:background="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_delete_forever_24" />
+            android:id="@+id/imageButton4"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginEnd="2dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/switch_server"
+            android:tint="@color/icon_tint"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imageButton3"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_loop_main_24"/>
 
     <ImageButton
-        android:id="@+id/imageButton4"
-        android:layout_width="40dp"
-        android:layout_height="match_parent"
-        android:background="@null"
-        app:layout_constraintBottom_toBottomOf="@+id/imageButton3"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton3"
-        app:layout_constraintTop_toTopOf="@+id/imageButton3"
-        app:srcCompat="@drawable/ic_baseline_loop_main_24" />
+            android:id="@+id/imageButton3"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/delete_cache"
+            android:tint="@color/ink_secondary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_baseline_delete_forever_24"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

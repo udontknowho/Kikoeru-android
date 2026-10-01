@@ -1,15 +1,15 @@
 <resources>
     <!-- Base application theme. -->
     <style name="Theme.Kikoeru" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/main_color</item>
-        <item name="colorPrimaryVariant">@color/main_color</item>
+        <!-- 强调色统一成墨绿（图标/复选框/开关/按钮都跟它走）；粉色只留给启动图 -->
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorPrimaryVariant">@color/accent</item>
         <item name="colorOnPrimary">@color/white</item>
 
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/green</item>
+        <item name="colorSecondary">@color/accent</item>
 
-        <item name="colorSecondaryVariant">@color/green</item>
+        <item name="colorSecondaryVariant">@color/accent</item>
         <item name="colorOnSecondary">@android:color/holo_green_light</item>
 
         <!-- Status bar color. -->

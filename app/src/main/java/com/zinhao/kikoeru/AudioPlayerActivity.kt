@@ -73,7 +73,7 @@ class AudioPlayerActivity : BaseActivity(), ServiceConnection, MusicChangeListen
         tvTitle = viewBinding.textView13
         setupSleepMenu()
         timeProgressView = viewBinding.timeView
-        timeProgressView!!.setColor(ContextCompat.getColor(this, R.color.play_control_icon_color))
+        timeProgressView!!.setColor(ContextCompat.getColor(this, R.color.ink_primary))
         ibPause!!.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 if (ctrlBinder == null) return
