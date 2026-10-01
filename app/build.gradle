@@ -116,7 +116,11 @@ dependencies {
 
     // 音频流也走 OkHttp,才能吃 HttpClientManager 里的本地代理
     // (ExoPlayer 默认的 DefaultHttpDataSource 是 HttpURLConnection,不认 OkHttp 的代理设置)
-    implementation 'com.google.android.exoplayer:extension-okhttp:2.16.1'
+    // 必须 transitive = false:否则 Maven 会把 exoplayer-core/common/datasource 整套再拉一份进来,
+    // 和 app/libs 里那些同版本的本地 aar 撞重复类
+    implementation('com.google.android.exoplayer:extension-okhttp:2.16.1') {
+        transitive = false
+    }
 }
 
 class RoomSchemaArgProvider implements CommandLineArgumentProvider {
