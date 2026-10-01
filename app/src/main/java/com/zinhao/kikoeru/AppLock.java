@@ -35,7 +35,11 @@ public final class AppLock {
 
     /** 设备连指纹/锁屏密码都没有的时候,这个开关没有意义 */
     public static boolean isAvailable() {
-        BiometricManager manager = BiometricManager.from(App.getInstance());
+        // 框架版的 BiometricManager 没有 from(Context) 这个静态工厂(那是 androidx 版的),只能从系统服务拿
+        BiometricManager manager = App.getInstance().getSystemService(BiometricManager.class);
+        if (manager == null) {
+            return false;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             return manager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK
                     | BiometricManager.Authenticators.DEVICE_CREDENTIAL) == BiometricManager.BIOMETRIC_SUCCESS;
