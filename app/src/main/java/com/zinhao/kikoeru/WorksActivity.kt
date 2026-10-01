@@ -25,6 +25,8 @@ import com.koushikdutta.async.http.AsyncHttpClient
 import com.koushikdutta.async.http.AsyncHttpResponse
 import com.zinhao.kikoeru.Api.setOrder
 import com.zinhao.kikoeru.databinding.ActivityMainBinding
+import com.zinhao.kikoeru.data.repository.UserRepository
+import com.zinhao.kikoeru.db.User
 import com.zinhao.kikoeru.ui.WorkPageActivity
 import com.zinhao.kikoeru.utils.LoadingFooterDecoration
 import org.json.JSONArray
@@ -141,12 +143,72 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         val storeLayoutType = viewModel.layoutType
         initLayout(storeLayoutType)
 
+        // 标题上点一下 = 切换已配置的站点
+        binding.toolbar.setOnClickListener { showSiteSwitcher() }
+
         // 收藏 tab 默认选“我的评价”
         binding.chipGroup.check(R.id.chipReview)
 
         // 免账号/游客的实例(别人的公开库)没有“我的评价/进度”，把它们收起来
         if (Api.hostKind(Api.currentHost()) != Api.HostKind.NORMAL) {
             binding.bottomNav.menu.findItem(R.id.nav_favourites)?.isVisible = false
+        }
+    }
+
+    /** 点标题：已经配置过的站点列表 + 还没配置的内置站点 + 添加站点 */
+    private fun showSiteSwitcher() {
+        val users = App.getInstance().getAllUsers()
+        val currentId = App.getInstance().getCurrentUserId()
+        val labels = ArrayList<String>()
+        for (u in users) {
+            labels.add(u.getName() + " · " + u.getHost() + if (u.getId() == currentId) "  ✓" else "")
+        }
+        val newHosts = Api.BUILTIN_HOSTS.filter { host ->
+            users.none { it.getHost() != null && it.getHost().contains(host.substringAfter("://")) }
+        }
+        for (h in newHosts) {
+            val suffix = when (Api.hostKind(h)) {
+                Api.HostKind.NO_TOKEN -> "  " + getString(R.string.user_enter)
+                Api.HostKind.GUEST_TOKEN -> "  " + getString(R.string.user_guest)
+                else -> ""
+            }
+            labels.add("＋ " + h + suffix)
+        }
+        val addIndex = labels.size
+        labels.add(getString(R.string.add_site))
+
+        androidx.appcompat.app.AlertDialog.Builder(this, R.style.RoundedAlertDialog)
+            .setTitle(R.string.switch_server)
+            .setItems(labels.toTypedArray()) { _, which ->
+                when {
+                    which < users.size -> switchToUser(users[which])
+                    which < addIndex -> switchToNewHost(newHosts[which - users.size])
+                    else -> startActivity(Intent(this, LoginAccountActivity::class.java))
+                }
+            }
+            .show()
+    }
+
+    private fun switchToUser(user: User) {
+        if (user.getId() == App.getInstance().getCurrentUserId()) return
+        stopService(Intent(this, AudioService::class.java))
+        App.getInstance().setValue(App.CONFIG_USER_DATABASE_ID, user.getId())
+        App.getInstance().setCurrentUserId(user.getId())
+        Api.init(user.getToken(), user.getHost())
+        recreate()
+    }
+
+    /** 还没配置过的内置站点：免账号的直接建号，其余跳登录页（预填地址） */
+    private fun switchToNewHost(host: String) {
+        if (Api.isNoTokenHost(host)) {
+            UserRepository.getInstance().saveGuestUser(host) {
+                runOnUiThread {
+                    stopService(Intent(this, AudioService::class.java))
+                    recreate()
+                }
+            }
+        } else {
+            startActivity(Intent(this, LoginAccountActivity::class.java).putExtra("host", host))
         }
     }
 
@@ -285,7 +347,8 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         viewModel.title.observe(this) { title ->
             // “我的”页面的标题是固定的，别被列表回调覆盖
             if (currentTab != TAB_MINE) {
-                supportActionBar?.title = title
+                // 标题后面加个小箭头，提示点标题能切站点
+                supportActionBar?.title = if (title.isNullOrBlank()) title else "$title  ▾"
             }
         }
 

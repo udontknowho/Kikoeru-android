@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 底栏图标/文字：选中用强调绿，未选中用副文字色（深浅色都跟着走） -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/white" android:state_checked="true"/>
-    <item android:color="#CCFFFFFF"/>
+    <item android:color="@color/icon_tint" android:state_checked="true"/>
+    <item android:color="@color/ink_secondary"/>
 </selector>

@@ -297,7 +297,7 @@
                 android:id="@+id/bottomNav"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?attr/colorPrimaryVariant"
+                android:background="@color/card_surface"
                 android:elevation="10dp"
                 app:itemIconTint="@color/nav_item_color"
                 app:itemTextColor="@color/nav_item_color"

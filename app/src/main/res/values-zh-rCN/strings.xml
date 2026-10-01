@@ -28,6 +28,8 @@
     <string name="theme_dark">深色</string>
     <string name="group_server">服务器</string>
     <string name="switch_server">切换服务器</string>
+    <string name="add_site">＋ 添加站点…</string>
+    <string name="login_as_guest">以游客身份进入</string>
     <string name="only_load_has_lrc_desc">没有字幕的作品不显示</string>
     <string name="save_at_external_desc">下载到公共文件夹</string>
     <string name="proxy_desc">只让本应用走代理</string>

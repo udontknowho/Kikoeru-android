@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 同上（card_surface 在 values-night 里已经是深色，这里保持一致即可） -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="?attr/colorPrimaryVariant" />
+    <solid android:color="@color/card_surface" />
     <corners
-        android:topLeftRadius="15dp"
-        android:topRightRadius="15dp"
-        />
+        android:topLeftRadius="18dp"
+        android:topRightRadius="18dp" />
 </shape>

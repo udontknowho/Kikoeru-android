@@ -106,6 +106,62 @@
                     android:layout_height="wrap_content" />
         </LinearLayout>
 
+        <!-- 代理地址（端口/账号也写在这里，格式 host:port） -->
+        <LinearLayout
+                android:id="@+id/proxyAddrRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+            <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/proxy_addr"
+                    android:textSize="14sp" />
+
+            <TextView
+                    android:id="@+id/tvProxyAddrLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/ink_secondary"
+                    tools:text="127.0.0.1:7890" />
+        </LinearLayout>
+
+        <!-- 以游客身份进去（原来是个「访客」按钮，改成开关） -->
+        <LinearLayout
+                android:id="@+id/guestRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+            <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/login_as_guest"
+                    android:textSize="15sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swGuest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+        </LinearLayout>
+
         <Button
                 android:id="@+id/button2"
                 android:layout_width="wrap_content"
@@ -128,7 +184,7 @@
                     android:id="@+id/button4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
+                    android:visibility="gone"
                     android:text="@string/user_guest"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent" />

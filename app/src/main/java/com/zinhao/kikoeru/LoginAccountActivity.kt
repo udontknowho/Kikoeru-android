@@ -27,10 +27,11 @@ class LoginAccountActivity : BaseActivity() {
     private var tilPassword: TextInputLayout? = null
     private var tilServer: TextInputLayout? = null
     private var btSignIn: Button? = null
-    private var btGuest: Button? = null
     private var btSignUp: Button? = null
     private var swProxy: SwitchCompat? = null
+    private var swGuest: SwitchCompat? = null
     private var tvGuestHint: TextView? = null
+    private var tvProxyAddrLogin: TextView? = null
 
     private var viewModel: LoginViewModel? = null
     private lateinit var viewBinding: ActivityLoginAccountBinding
@@ -53,24 +54,20 @@ class LoginAccountActivity : BaseActivity() {
 
     private fun setupListeners() {
         btSignIn!!.setOnClickListener(View.OnClickListener { v: View? ->
-            // 更新 ViewModel 中的值
-            updateViewModelInputs()
-            if (Api.hostKind(currentHostText()) == Api.HostKind.NO_TOKEN) {
+            val kind = Api.hostKind(currentHostText())
+            if (kind == Api.HostKind.NO_TOKEN) {
                 // 免账号站点：直接建本地 guest 用户，不走登录接口
+                updateViewModelInputs()
                 viewModel!!.loginWithoutAccount()
-            } else {
-                // 游客 token 的站点，字段里已经填好 guest/guest，走正常登录
-                viewModel!!.login()
+                return@OnClickListener
             }
-        })
-
-        btGuest!!.setOnClickListener(View.OnClickListener { v: View? ->
+            if (swGuest?.isChecked == true) {
+                // 开了游客开关：给后端发 guest/guest
+                tilUser?.editText?.setText("guest")
+                tilPassword?.editText?.setText("guest")
+            }
             updateViewModelInputs()
-            if (Api.hostKind(currentHostText()) == Api.HostKind.NO_TOKEN) {
-                viewModel!!.loginWithoutAccount()
-            } else {
-                viewModel!!.loginAsGuest()
-            }
+            viewModel!!.login()
         })
     }
 
@@ -80,10 +77,13 @@ class LoginAccountActivity : BaseActivity() {
     /** 免账号/游客站点：把账号密码两个框整块收走（置灰太丑），换一行说明 */
     private fun applyHostMode(host: String) {
         val kind = Api.hostKind(host)
-        val hideAccount = kind != Api.HostKind.NORMAL
+        // 免账号站点，或用户自己开了“以游客身份进入” -> 收走账号密码框
+        val hideAccount = kind != Api.HostKind.NORMAL || swGuest?.isChecked == true
         tilUser?.visibility = if (hideAccount) View.GONE else View.VISIBLE
         tilPassword?.visibility = if (hideAccount) View.GONE else View.VISIBLE
         tvGuestHint?.visibility = if (hideAccount) View.VISIBLE else View.GONE
+        // 本身就是免账号的站点，就不用再显示游客开关了
+        viewBinding.guestRow.visibility = if (kind == Api.HostKind.NORMAL) View.VISIBLE else View.GONE
         when (kind) {
             Api.HostKind.NO_TOKEN -> {
                 btSignIn?.text = getString(R.string.user_enter)
@@ -97,7 +97,8 @@ class LoginAccountActivity : BaseActivity() {
             }
 
             else -> {
-                btSignIn?.text = getString(R.string.user_sign_in)
+                btSignIn?.text = if (swGuest?.isChecked == true)
+                    getString(R.string.user_enter_guest) else getString(R.string.user_sign_in)
             }
         }
     }
@@ -190,6 +191,11 @@ class LoginAccountActivity : BaseActivity() {
             etPassword.setText("guest")
             etServer.setText(Api.REMOTE_HOST)
         }
+        // 从首页标题那里的“切换站点”跳过来时，带上了要配的地址
+        val presetHost = intent.getStringExtra("host")
+        if (!presetHost.isNullOrEmpty()) {
+            etServer.setText(Api.normalizeHost(presetHost))
+        }
         applyHostMode(etServer.getText().toString())
     }
 
@@ -220,10 +226,11 @@ class LoginAccountActivity : BaseActivity() {
         tilPassword = viewBinding.textInputLayout2
         tilServer = viewBinding.textInputLayout3
         btSignIn = viewBinding.button2
-        btGuest = viewBinding.button4
         btSignUp = viewBinding.button3
         swProxy = viewBinding.swProxy
+        swGuest = viewBinding.swGuest
         tvGuestHint = viewBinding.guestHint
+        tvProxyAddrLogin = viewBinding.tvProxyAddrLogin
 
         // 代理开关：默认读设置里的值；改完作废一次探测缓存（跟设置页一致）
         swProxy?.isChecked = App.getInstance().getValue(App.CONFIG_PROXY_ENABLED, 1L) == 1L
@@ -231,6 +238,46 @@ class LoginAccountActivity : BaseActivity() {
             App.getInstance().setValue(App.CONFIG_PROXY_ENABLED, if (isChecked) 1L else 0L)
             com.zinhao.kikoeru.network.HttpClientManager.resetProxyCache()
         }
+
+        // 代理地址：登录页就能改，免得为了改端口还得先进 App
+        updateProxyAddrLabel()
+        viewBinding.proxyAddrRow.setOnClickListener { showProxyAddrDialog() }
+
+        // 游客开关：勾上就按游客进去（账号密码框跟着收起）
+        swGuest?.setOnCheckedChangeListener { _, _ -> applyHostMode(currentHostText()) }
+    }
+
+    private fun updateProxyAddrLabel() {
+        tvProxyAddrLogin?.text =
+            App.getInstance().getValue(App.CONFIG_PROXY_ADDR, App.DEFAULT_PROXY_ADDR)
+    }
+
+    /** 代理地址 host:port */
+    private fun showProxyAddrDialog() {
+        val input = android.widget.EditText(this)
+        input.setText(App.getInstance().getValue(App.CONFIG_PROXY_ADDR, App.DEFAULT_PROXY_ADDR))
+        input.setSelection(input.text.length)
+        androidx.appcompat.app.AlertDialog.Builder(this, R.style.RoundedAlertDialog)
+            .setTitle(R.string.proxy_addr)
+            .setView(input)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val addr = input.text.toString().trim()
+                val sep = addr.lastIndexOf(':')
+                var ok = sep > 0 && sep < addr.length - 1
+                if (ok) {
+                    val port = addr.substring(sep + 1).trim().toIntOrNull()
+                    ok = port != null && port in 1..65535
+                }
+                if (!ok) {
+                    Toast.makeText(this, R.string.proxy_addr_invalid, Toast.LENGTH_LONG).show()
+                    return@setPositiveButton
+                }
+                App.getInstance().setValue(App.CONFIG_PROXY_ADDR, addr)
+                updateProxyAddrLabel()
+                com.zinhao.kikoeru.network.HttpClientManager.resetProxyCache()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

@@ -42,6 +42,8 @@
     <string name="theme_dark">Dark</string>
     <string name="group_server">Servers</string>
     <string name="switch_server">Switch server</string>
+    <string name="add_site">＋ Add a server…</string>
+    <string name="login_as_guest">Sign in as guest</string>
     <string name="only_load_has_lrc_desc">Hide works without subtitles</string>
     <string name="save_at_external_desc">Download into the public folder</string>
     <string name="proxy_desc">Only this app goes through it</string>
