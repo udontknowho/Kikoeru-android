@@ -36,6 +36,8 @@ public class App extends Application implements Application.ActivityLifecycleCal
     public static final String CONFIG_ONLY_DISPLAY_LRC = "only_display_lrc";
     public static final String CONFIG_SORT = "sort";
     public static final String CONFIG_ORDER = "order";
+    /** 首页列表的 seed：换个值就换一批顺序（下拉刷新时换） */
+    public static final String CONFIG_HOME_SEED = "home_seed";
     public static final String CONFIG_DEBUG = "debug";
     public static final String CONFIG_NEW_LAYOUT = "new_layout";
     public static final String CONFIG_SAVE_EXTERNAL = "save_at_external_dir";

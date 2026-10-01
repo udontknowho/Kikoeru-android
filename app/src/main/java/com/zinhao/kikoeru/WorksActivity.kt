@@ -118,6 +118,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         setSafeArea(binding.appBarLayout,object : BaseActivity.InsetReady{
             override fun onInsetReady(insets: Insets) {
                 binding.recyclerView.setPadding(insets.left, 0, insets.right, 0)
+                binding.swipe.setPadding(insets.left, 0, insets.right, 0)
                 binding.bottomBar.setPadding(insets.left, 0, insets.right, insets.bottom)
             }
         })
@@ -164,6 +165,15 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
             }
         }
 
+        // 下拉刷新：首页就换一批(换 seed)，收藏 tab 就是普通重拉
+        binding.swipe.setOnRefreshListener {
+            if (currentTab == TAB_HOME) {
+                Api.reshuffleHome()
+            }
+            viewModel.clearWorks()
+            viewModel.loadFromNetwork()
+        }
+
         // 我的
         binding.mineAccount.setOnClickListener {
             App.getInstance().setValue(App.CONFIG_UPDATE_TIME, 0)
@@ -190,7 +200,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         }
 
         binding.btRetry.setOnClickListener {
-            binding.recyclerView.visibility = View.VISIBLE
+            binding.swipe.visibility = View.VISIBLE
             binding.llNetErr.visibility = View.GONE
             viewModel.loadFromNetwork()
         }
@@ -247,7 +257,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         // 作品列表变化
         viewModel.works.observe(this) { worksList ->
             if (currentTab != TAB_MINE) {
-                binding.recyclerView.visibility = View.VISIBLE
+                binding.swipe.visibility = View.VISIBLE
                 binding.llNetErr.visibility = View.GONE
             }
             if (workAdapter == null) {
@@ -270,6 +280,8 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         // 加载状态变化
         viewModel.loading.observe(this) { isLoading ->
             loadingDecoration?.isLoading = isLoading
+            // 下拉的转圈由这次加载收尾
+            if (!isLoading) binding.swipe.isRefreshing = false
         }
 
         // 错误事件
@@ -277,7 +289,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
             if(throwable is Exception){
                 alertException(throwable)
                 if(viewModel.works.value?.size == 0 && currentTab != TAB_MINE){
-                    binding.recyclerView.visibility = View.GONE
+                    binding.swipe.visibility = View.GONE
                     binding.llNetErr.visibility = View.VISIBLE
                     binding.tvNetErr.text = "${throwable.message}"
                 }
@@ -395,7 +407,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
             TAB_MINE -> {
                 binding.chipBar.visibility = View.GONE
                 binding.mineScroll.visibility = View.VISIBLE
-                binding.recyclerView.visibility = View.GONE
+                binding.swipe.visibility = View.GONE
                 binding.llNetErr.visibility = View.GONE
                 binding.tvAccount.text = getString(R.string.account) +
                         "  ·  " + (App.getInstance().currentUser()?.getName() ?: "")
@@ -406,7 +418,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
 
     /** 首页 = 全部作品，且不允许带着上次的筛选状态进来 */
     private fun showAllWorks() {
-        binding.recyclerView.visibility = View.VISIBLE
+        binding.swipe.visibility = View.VISIBLE
         binding.llNetErr.visibility = View.GONE
         viewModel.resetFilter()
         viewModel.clearWorks()
@@ -416,7 +428,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
     /** 收藏 tab 里的一个状态 */
     private fun applyFavouriteFilter(type: Int) {
         favType = type
-        binding.recyclerView.visibility = View.VISIBLE
+        binding.swipe.visibility = View.VISIBLE
         binding.llNetErr.visibility = View.GONE
         viewModel.clearWorks()
         viewModel.type = type
