@@ -421,8 +421,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
                 binding.mineScroll.visibility = View.VISIBLE
                 binding.swipe.visibility = View.GONE
                 binding.llNetErr.visibility = View.GONE
-                binding.tvAccount.text = getString(R.string.account) +
-                        "  ·  " + (App.getInstance().currentUser()?.getName() ?: "")
+                binding.tvAccount.text = App.getInstance().currentUser()?.getName() ?: ""
                 supportActionBar?.title = getString(R.string.mine)
             }
         }

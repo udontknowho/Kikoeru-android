@@ -129,124 +129,152 @@
         <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-            <RelativeLayout
-                    android:id="@+id/mineAccount"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-                <TextView
-                        android:id="@+id/tvAccount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawableStart="@drawable/ic_baseline_people_24"
-                        android:drawableTint="@color/black"
-                        android:text="@string/account"
-                        android:textSize="16sp"/>
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text="&#8250;"
-                        android:textSize="20sp"/>
-            </RelativeLayout>
-            <RelativeLayout
-                    android:id="@+id/mineCategory"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawableStart="@drawable/ic_baseline_category_24"
-                        android:drawablePadding="16dp"
-                        android:drawableTint="@color/black"
-                        android:text="@string/category"
-                        android:textSize="16sp"/>
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text="&#8250;"
-                        android:textSize="20sp"/>
-            </RelativeLayout>
-            <RelativeLayout
-                    android:id="@+id/mineDownload"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawableStart="@drawable/ic_baseline_storage_24"
-                        android:drawableTint="@color/black"
-                        android:text="@string/download_mission"
-                        android:textSize="16sp"/>
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text="&#8250;"
-                        android:textSize="20sp"/>
-            </RelativeLayout>
-            <RelativeLayout
-                    android:id="@+id/mineHistory"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawableStart="@drawable/ic_baseline_loop_main_24"
-                        android:drawableTint="@color/black"
-                        android:text="@string/local_history"
-                        android:textSize="16sp"/>
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text="&#8250;"
-                        android:textSize="20sp"/>
-            </RelativeLayout>
-            <RelativeLayout
-                    android:id="@+id/mineSettings"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/item_bg">
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="20dp"
-                        android:drawableStart="@drawable/ic_baseline_settings_24"
-                        android:drawableTint="@color/black"
-                        android:text="@string/action_settings"
-                        android:textSize="16sp"/>
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginEnd="20dp"
-                        android:text="&#8250;"
-                        android:textSize="20sp"/>
-            </RelativeLayout>
+                android:orientation="vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="24dp">
+
+            <TextView
+                    style="@style/Theme.Kikoeru.SettingsGroup"
+                    android:paddingStart="8dp"
+                    android:text="@string/account"/>
+
+            <LinearLayout style="@style/Theme.Kikoeru.SettingsCard">
+
+                <LinearLayout
+                        android:id="@+id/mineAccount"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/account"
+                            android:src="@drawable/ic_baseline_people_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/account"/>
+                        <TextView
+                                android:id="@+id/tvAccount"
+                                style="@style/Theme.Kikoeru.SettingsRowSub"
+                                tools:text="guest"/>
+                    </LinearLayout>
+
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                    style="@style/Theme.Kikoeru.SettingsGroup"
+                    android:paddingStart="8dp"
+                    android:text="@string/category"/>
+
+            <LinearLayout style="@style/Theme.Kikoeru.SettingsCard">
+
+                <LinearLayout
+                        android:id="@+id/mineCategory"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/category"
+                            android:src="@drawable/ic_baseline_category_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/category"/>
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowSub"
+                                android:text="@string/category_desc"/>
+                    </LinearLayout>
+
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                    style="@style/Theme.Kikoeru.SettingsGroup"
+                    android:paddingStart="8dp"
+                    android:text="@string/group_storage"/>
+
+            <LinearLayout style="@style/Theme.Kikoeru.SettingsCard">
+
+                <LinearLayout
+                        android:id="@+id/mineDownload"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/download_mission"
+                            android:src="@drawable/ic_baseline_download_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/download_mission"/>
+                    </LinearLayout>
+
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
+
+                <View style="@style/Theme.Kikoeru.SettingsDivider"/>
+
+                <LinearLayout
+                        android:id="@+id/mineHistory"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/local_history"
+                            android:src="@drawable/ic_baseline_history_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/local_history"/>
+                    </LinearLayout>
+
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                    style="@style/Theme.Kikoeru.SettingsGroup"
+                    android:paddingStart="8dp"
+                    android:text="@string/group_others"/>
+
+            <LinearLayout style="@style/Theme.Kikoeru.SettingsCard">
+
+                <LinearLayout
+                        android:id="@+id/mineSettings"
+                        style="@style/Theme.Kikoeru.SettingsRow">
+
+                    <ImageView
+                            style="@style/Theme.Kikoeru.SettingsRowIcon"
+                            android:contentDescription="@string/action_settings"
+                            android:src="@drawable/ic_baseline_settings_24"/>
+
+                    <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                        <TextView
+                                style="@style/Theme.Kikoeru.SettingsRowTitle"
+                                android:text="@string/action_settings"/>
+                    </LinearLayout>
+
+                    <TextView
+                            style="@style/Theme.Kikoeru.SettingsRowArrow"
+                            android:text="&#8250;"/>
+                </LinearLayout>
+            </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 
