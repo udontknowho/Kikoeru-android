@@ -107,8 +107,8 @@ class LoginAccountActivity : BaseActivity() {
         viewModel!!.getIsLoading().observe(this, object : Observer<Boolean?> {
             override fun onChanged(isLoading: Boolean?) {
                 isLoading?.let {
-                    btSignIn!!.setEnabled(!it)
-                    btGuest!!.setEnabled(!it)
+                    btSignIn!!.isEnabled = !it
+                    swGuest?.isEnabled = !it
                 }
 
             }
