@@ -155,6 +155,9 @@ class AudioPlayerActivity : BaseActivity(), ServiceConnection, MusicChangeListen
 
     var lastScrollIDLE = 0L
 
+    // 上一次已经滚到的行：同一行不重复滚，换行就滚
+    private var lastScrolledIndex = -1
+
     private fun updateLrcUi(lrc: Lrc?){
         if(lrc == Lrc.NONE || lrc == null || lrc.lrcRows.isNullOrEmpty()){
             runOnUiThread {
@@ -183,8 +186,12 @@ class AudioPlayerActivity : BaseActivity(), ServiceConnection, MusicChangeListen
             }
             recyclerView!!.layoutManager = LinearLayoutManager(this)
             recyclerView!!.adapter = lrcAdapter
+            // 重建 adapter 后列表会回到顶部，让下面这次滚动重新生效
+            lastScrolledIndex = -1
             scrollToLrcPosition()
 
+            // setupLrc 会被多次调用(onLrcChange/onServiceConnected)，先清掉旧的，否则监听器越堆越多
+            recyclerView!!.clearOnScrollListeners()
             recyclerView!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     if(newState == RecyclerView.SCROLL_STATE_IDLE) {
@@ -266,17 +273,17 @@ class AudioPlayerActivity : BaseActivity(), ServiceConnection, MusicChangeListen
     }
 
     private fun scrollToLrcPosition(){
-        if(System.currentTimeMillis() - lastScrollIDLE > 3000) {
-            val manger = recyclerView?.layoutManager
-            if(manger is LinearLayoutManager) {
-                val index = manger.findLastCompletelyVisibleItemPosition()
-                ctrlBinder?.let {
-                    if(it.lrc.currentIndex != index) {
-                        manger.scrollToPosition(it.lrc.currentIndex)
-                    }
-                }
-            }
-        }
+        // 用户刚手动滑过就先不抢他的（3 秒），其余情况一律跟着当前行滚。
+        // 以前这里比的是 findLastCompletelyVisibleItemPosition()：
+        // 一是整行“完全可见”才算数，当前行在屏幕上但只露一半时就当成不可见；
+        // 二是 notifyItemRangeChanged 改了行高之后，这个值是上一次布局的旧数据，
+        // 于是经常出现“当前行编号等于最后可见行编号”→ 直接跳过滚动，歌词就停在那儿了。
+        if (System.currentTimeMillis() - lastScrollIDLE < 3000) return
+        val manger = recyclerView?.layoutManager as? LinearLayoutManager ?: return
+        val index = ctrlBinder?.lrc?.currentIndex ?: return
+        if (index < 0 || index == lastScrolledIndex) return
+        lastScrolledIndex = index
+        manger.scrollToPosition(index)
     }
 
     override fun onLrcChange(lrc: Lrc?) {
