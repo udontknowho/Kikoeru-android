@@ -352,9 +352,9 @@ public class AudioService extends Service {
     private void loadLrc(){
         Log.d(TAG, "loadLrc: " + ctrlBinder.current.optString(JSONConst.WorkTree.TITLE));
         try {
-            String path = ctrlBinder.current.getString(JSONConst.WorkTree.MAP_FILE_PATH);
+            String path = ctrlBinder.current.optString(JSONConst.WorkTree.MAP_FILE_PATH, "");
             File audioFile = new File(path);
-            if (!LocalFileCache.getInstance().getLrcText(audioFile, ctrlBinder.lrcCallBack)) {
+            if (path.isEmpty() || !LocalFileCache.getInstance().getLrcText(audioFile, ctrlBinder.lrcCallBack)) {
                 // Local lrc file not exist
                 if(ctrlBinder.current.has("lrc_info")){
                     JSONObject lrcInfo = ctrlBinder.current.getJSONObject(JSONConst.WorkTree.LRC_INFO);
@@ -800,9 +800,10 @@ public class AudioService extends Service {
                 MediaItem mediaItem;
                 MediaItem.Builder builder = new MediaItem.Builder();
                 JSONObject music = playList.get(i);
-                String path = music.getString(JSONConst.WorkTree.MAP_FILE_PATH);
+                String path = music.optString(JSONConst.WorkTree.MAP_FILE_PATH, "");
                 File audioFile = new File(path);
-                if (audioFile.exists()) {
+                // 有的服务器(个人库)不给 local_file_path 这个字段，以前用 getString 会直接抛
+                if (!path.isEmpty() && audioFile.exists()) {
                     builder.setUri(Uri.fromFile(audioFile));
                 } else {
                     path = music.getString(JSONConst.WorkTree.MEDIA_STREAM_URL);

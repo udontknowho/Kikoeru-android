@@ -22,7 +22,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -91,6 +96,37 @@ public class App extends Application implements Application.ActivityLifecycleCal
         tv.setBackground(background);
     }
 
+
+    /**
+     * 把未捕获异常的堆栈写到 /sdcard/Android/media/<包名>/crash/ 下。
+     * 这个目录别的 App（包括 Termux）能读，方便直接把日志拿过来定位闪退；
+     * 写完仍然交给系统原本的处理器，崩潰对话框不变。
+     */
+    private void installCrashLogger() {
+        final Thread.UncaughtExceptionHandler previous = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            try {
+                File[] dirs = getExternalMediaDirs();
+                File dir = new File(dirs != null && dirs.length > 0 ? dirs[0] : getFilesDir(), "crash");
+                if (dir.mkdirs() || dir.isDirectory()) {
+                    String stamp = new SimpleDateFormat("MMdd-HHmmss", java.util.Locale.US).format(new Date());
+                    File out = new File(dir, "crash-" + stamp + ".txt");
+                    PrintWriter pw = new PrintWriter(new FileWriter(out, true));
+                    pw.println("time: " + new Date());
+                    pw.println("thread: " + thread.getName());
+                    pw.println("version: " + BuildConfig.VERSION_NAME);
+                    throwable.printStackTrace(pw);
+                    pw.close();
+                    Log.e("KikoeruCrash", "crash log -> " + out.getAbsolutePath(), throwable);
+                }
+            } catch (Throwable ignored) {
+                // 写日志本身失败就算了，不能因此再抛一次
+            }
+            if (previous != null) {
+                previous.uncaughtException(thread, throwable);
+            }
+        });
+    }
 
     public static App getInstance() {
         return instance;
@@ -199,6 +235,7 @@ public class App extends Application implements Application.ActivityLifecycleCal
     public void onCreate() {
         super.onCreate();
         instance = this;
+        installCrashLogger();
         registerActivityLifecycleCallbacks(this);
         AppDatabase appDatabase = Room.databaseBuilder(getApplicationContext(), AppDatabase.class,"app.db")
                 .addMigrations(AppDatabase.MIGRATION_1_2)
