@@ -163,6 +163,112 @@
             </RelativeLayout>
 
             <RelativeLayout
+                    android:id="@+id/proxySwitch"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/item_bg">
+
+                <TextView
+                        android:id="@+id/textView18"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="20dp"
+                        android:drawableStart="@drawable/ic_baseline_widgets_24"
+                        android:drawableTint="@color/black"
+                        android:gravity="center"
+                        android:text="@string/proxy_enabled"
+                        android:textSize="16sp" />
+
+                <CheckBox
+                        android:id="@+id/cbProxy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="20dp"
+                        android:text="" />
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/gray_80" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                    android:id="@+id/proxyAddr"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/item_bg">
+
+                <TextView
+                        android:id="@+id/textView19"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="20dp"
+                        android:drawableStart="@drawable/ic_baseline_widgets_24"
+                        android:drawableTint="@color/black"
+                        android:gravity="center"
+                        android:text="@string/proxy_addr"
+                        android:textSize="16sp" />
+
+                <TextView
+                        android:id="@+id/tvProxyAddr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="20dp"
+                        android:text="127.0.0.1:7890"
+                        android:textColor="@color/gray"
+                        android:textSize="14sp" />
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/gray_80" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                    android:id="@+id/lrcSize"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:background="@drawable/item_bg">
+
+                <TextView
+                        android:id="@+id/textView20"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="20dp"
+                        android:drawableStart="@drawable/ic_baseline_widgets_24"
+                        android:drawableTint="@color/black"
+                        android:gravity="center"
+                        android:text="@string/lrc_text_size"
+                        android:textSize="16sp" />
+
+                <TextView
+                        android:id="@+id/tvLrcSize"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="20dp"
+                        android:text="36sp"
+                        android:textColor="@color/gray"
+                        android:textSize="14sp" />
+
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/gray_80" />
+            </RelativeLayout>
+
+            <RelativeLayout
                     android:id="@+id/license"
                     android:layout_width="match_parent"
                     android:layout_height="56dp"

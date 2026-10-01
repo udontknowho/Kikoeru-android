@@ -55,6 +55,11 @@
     <string name="app_lock_title">Unlock</string>
     <string name="app_lock_subtitle">Verify yourself to continue</string>
     <string name="app_lock_unavailable">Set a screen lock or fingerprint first</string>
+    <string name="app_lock_button">Unlock</string>
+    <string name="proxy_enabled">Use local proxy</string>
+    <string name="proxy_addr">Proxy address</string>
+    <string name="proxy_addr_invalid">Use host:port, e.g. 127.0.0.1:7890</string>
+    <string name="lrc_text_size">Subtitle size</string>
     <string name="savePath">Save position</string>
     <string name="saveAtExternal">Save at external storage</string>
     <string name="search">Search</string>

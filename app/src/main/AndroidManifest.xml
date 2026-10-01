@@ -90,6 +90,11 @@
         </activity>
         <activity android:name=".CirclesActivity"/>
         <activity android:name=".LastWatchActivity" android:exported="false"/>
+        <activity
+                android:name=".LockActivity"
+                android:launchMode="singleTop"
+                android:excludeFromRecents="true"
+                android:theme="@style/Theme.Kikoeru.Lock"/>
         <activity android:name="com.zinhao.kikoeru.ui.WorkPageActivity"/>
 
         <service

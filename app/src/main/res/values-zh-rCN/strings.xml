@@ -41,6 +41,11 @@
     <string name="app_lock_title">解锁</string>
     <string name="app_lock_subtitle">验证身份后继续</string>
     <string name="app_lock_unavailable">请先设置锁屏密码或指纹</string>
+    <string name="app_lock_button">解锁</string>
+    <string name="proxy_enabled">使用本地代理</string>
+    <string name="proxy_addr">代理地址</string>
+    <string name="proxy_addr_invalid">格式是 主机:端口,例如 127.0.0.1:7890</string>
+    <string name="lrc_text_size">字幕字号</string>
     <string name="savePath">存储位置</string>
     <string name="saveAtExternal">保存到外部文件夹</string>
     <string name="search">search</string>

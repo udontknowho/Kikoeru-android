@@ -37,6 +37,15 @@ public class App extends Application implements Application.ActivityLifecycleCal
     public static final String CONFIG_DEBUG = "debug";
     public static final String CONFIG_NEW_LAYOUT = "new_layout";
     public static final String CONFIG_SAVE_EXTERNAL = "save_at_external_dir";
+    public static final String CONFIG_PROXY_ENABLED = "proxy_enabled";
+    public static final String CONFIG_PROXY_ADDR = "proxy_addr";
+    public static final String CONFIG_LRC_TEXT_SIZE = "lrc_text_size";
+    public static final String DEFAULT_PROXY_ADDR = "127.0.0.1:7890";
+
+    /** 桌面字幕字号(sp),设置页里可调 */
+    public int getLrcTextSize() {
+        return (int) getValue(CONFIG_LRC_TEXT_SIZE, 36L);
+    }
 
 
     public static App getInstance() {
@@ -362,7 +371,7 @@ public class App extends Application implements Application.ActivityLifecycleCal
     @Override
     public void onActivityResumed(@NonNull Activity activity) {
         if (AppLock.isEnabled() && !AppLock.isUnlocked()) {
-            AppLock.authenticate(activity);
+            AppLock.showLockScreen(activity);
         }
     }
 

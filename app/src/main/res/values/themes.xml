@@ -61,6 +61,14 @@
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
+    <!-- 验证遮罩页:windowBackground 不透明,连状态栏/导航栏区域一起盖住 -->
+    <style name="Theme.Kikoeru.Lock" parent="Theme.Kikoeru">
+        <item name="android:windowBackground">@color/lock_bg</item>
+        <item name="android:statusBarColor">@color/lock_bg</item>
+        <item name="android:navigationBarColor">@color/lock_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
 
     <style name="Theme.Kikoeru.Toolbar" parent="Widget.Material3.Toolbar">
         <item name="titleTextColor">@color/white</item>

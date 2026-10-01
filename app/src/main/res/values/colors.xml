@@ -26,4 +26,7 @@
     <color name="play_control_icon_color">#FFFFFFFF</color>
     <color name="pine_700">#FF753F</color>
     <color name="gray_80">#80979795</color>
+
+    <!-- 验证遮罩的背景:不透明,保证后面的内容一点不露 -->
+    <color name="lock_bg">#FF14171C</color>
 </resources>

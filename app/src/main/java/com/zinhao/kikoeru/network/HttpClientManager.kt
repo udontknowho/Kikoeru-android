@@ -1,6 +1,7 @@
 package com.zinhao.kikoeru.network
 
 import android.util.Log
+import com.zinhao.kikoeru.App
 import com.zinhao.kikoeru.BuildConfig
 import okhttp3.OkHttpClient
 import okhttp3.internal.platform.Platform
@@ -15,25 +16,49 @@ import javax.net.ssl.X509TrustManager
 object HttpClientManager {
     val TAG = "HttpClientManager"
 
-    /** 本地 mihomo 的混合端口(HTTP 和 SOCKS5 都吃) */
-    private const val LOCAL_PROXY_HOST = "127.0.0.1"
-    private const val LOCAL_PROXY_PORT = 7890
+    // 默认代理地址在 App.DEFAULT_PROXY_ADDR,设置页里可以改
 
     @Volatile
-    private var localProxyAlive: Boolean? = null
+    private var probed = false
 
-    /** 探一次端口,活着就一直走它;mihomo 没开就直连 */
-    private fun isLocalProxyAlive(): Boolean {
-        localProxyAlive?.let { return it }
-        val alive = try {
-            Socket().use { it.connect(InetSocketAddress(LOCAL_PROXY_HOST, LOCAL_PROXY_PORT), 300) }
-            true
-        } catch (e: IOException) {
-            false
+    @Volatile
+    private var cachedProxy: Proxy? = null
+
+    /** 设置页改了开关或地址就调它,把探测结果作废 */
+    fun resetProxyCache() {
+        probed = false
+        cachedProxy = null
+    }
+
+    /**
+     * 探一次端口:活着就用它当 HTTP 代理,没开就直连。结果缓存到进程结束,
+     * 所以要先把代理开起来再开 App。
+     */
+    private fun localProxy(): Proxy? {
+        if (probed) {
+            return cachedProxy
         }
-        Log.i(TAG, "本地代理可用: $alive")
-        localProxyAlive = alive
-        return alive
+        var result: Proxy? = null
+        if (App.getInstance().getValue(App.CONFIG_PROXY_ENABLED, 1L) == 1L) {
+            val addr = App.getInstance().getValue(App.CONFIG_PROXY_ADDR, App.DEFAULT_PROXY_ADDR)
+                    .ifBlank { App.DEFAULT_PROXY_ADDR }
+            try {
+                val sep = addr.lastIndexOf(':')
+                if (sep <= 0) throw IllegalArgumentException("地址要写成 主机:端口")
+                val host = addr.substring(0, sep).trim()
+                val port = addr.substring(sep + 1).trim().toInt()
+                Socket().use { it.connect(InetSocketAddress(host, port), 300) }
+                result = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port))
+                Log.i(TAG, "代理可用: $addr")
+            } catch (e: Exception) {
+                Log.i(TAG, "代理不可用($addr): ${e.message}")
+            }
+        } else {
+            Log.i(TAG, "代理已在设置里关掉")
+        }
+        cachedProxy = result
+        probed = true
+        return result
     }
 
     fun getPacEnabledClient(): OkHttpClient {
@@ -72,13 +97,13 @@ object HttpClientManager {
                 return systemProxies
             }
 
-            // 2. 本地 mihomo。这就是"只让这个 App 翻"的全部实现:只改 App 自己的出口,
+            // 2. 设置里的本地代理(默认 127.0.0.1:7890,也就是 mihomo 的混合端口)。
+            //    这就是"只让这个 App 翻"的全部实现:只改 App 自己的出口,
             //    不动系统代理、不影响别的应用
-            if (isLocalProxyAlive()) {
-                Log.i(TAG, "select:走本地代理 $LOCAL_PROXY_HOST:$LOCAL_PROXY_PORT")
-                return mutableListOf<Proxy?>(
-                    Proxy(Proxy.Type.HTTP, InetSocketAddress(LOCAL_PROXY_HOST, LOCAL_PROXY_PORT))
-                )
+            val local = localProxy()
+            if (local != null) {
+                Log.i(TAG, "select:走本地代理 ${local.address()}")
+                return mutableListOf<Proxy?>(local)
             }
 
             // 3. 直连
