@@ -296,13 +296,13 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/bottomNav"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="64dp"
                 android:background="@color/card_surface"
                 android:elevation="10dp"
                 app:itemIconSize="21dp"
                 app:itemIconTint="@color/nav_item_color"
-                app:itemPaddingTop="4dp"
-                app:itemPaddingBottom="4dp"
+                app:itemPaddingTop="6dp"
+                app:itemPaddingBottom="7dp"
                 app:itemTextColor="@color/nav_item_color"
                 app:labelVisibilityMode="labeled"
                 app:menu="@menu/bottom_nav"/>
