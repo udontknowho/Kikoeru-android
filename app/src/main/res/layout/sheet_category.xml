@@ -3,55 +3,81 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="8dp"
-    android:paddingBottom="16dp">
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:paddingTop="6dp"
+    android:paddingBottom="18dp">
 
     <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="20dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="6dp"
-            android:text="@string/category"
-            android:textSize="13sp"
-            android:textColor="@color/gray"/>
+            style="@style/Theme.Kikoeru.SettingsGroup"
+            android:paddingStart="8dp"
+            android:text="@string/category"/>
 
-    <TextView
-            android:id="@+id/categoryVa"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:gravity="center_vertical"
-            android:paddingStart="20dp"
-            android:background="@drawable/item_bg"
-            android:drawableStart="@drawable/ic_baseline_people_24"
-            android:drawablePadding="16dp"
-            android:drawableTint="@color/black"
-            android:text="@string/va_voicer"
-            android:textSize="16sp"/>
+    <LinearLayout style="@style/Theme.Kikoeru.SettingsCard">
 
-    <TextView
-            android:id="@+id/categoryTag"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:gravity="center_vertical"
-            android:paddingStart="20dp"
-            android:background="@drawable/item_bg"
-            android:drawableStart="@drawable/ic_baseline_tag_24"
-            android:drawablePadding="16dp"
-            android:drawableTint="@color/black"
-            android:text="@string/tag"
-            android:textSize="16sp"/>
+        <LinearLayout
+                android:id="@+id/categoryVa"
+                style="@style/Theme.Kikoeru.SettingsRow">
 
-    <TextView
-            android:id="@+id/categoryCircles"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:gravity="center_vertical"
-            android:paddingStart="20dp"
-            android:background="@drawable/item_bg"
-            android:drawableStart="@drawable/ic_baseline_people_24"
-            android:drawablePadding="16dp"
-            android:drawableTint="@color/black"
-            android:text="@string/circles"
-            android:textSize="16sp"/>
+            <ImageView
+                    style="@style/Theme.Kikoeru.SettingsRowIcon"
+                    android:contentDescription="@string/va_voicer"
+                    android:src="@drawable/ic_baseline_mic_24"/>
+
+            <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                <TextView
+                        style="@style/Theme.Kikoeru.SettingsRowTitle"
+                        android:text="@string/va_voicer"/>
+            </LinearLayout>
+
+            <TextView
+                    style="@style/Theme.Kikoeru.SettingsRowArrow"
+                    android:text="&#8250;"/>
+        </LinearLayout>
+
+        <View style="@style/Theme.Kikoeru.SettingsDivider"/>
+
+        <LinearLayout
+                android:id="@+id/categoryTag"
+                style="@style/Theme.Kikoeru.SettingsRow">
+
+            <ImageView
+                    style="@style/Theme.Kikoeru.SettingsRowIcon"
+                    android:contentDescription="@string/tag"
+                    android:src="@drawable/ic_baseline_local_offer_24"/>
+
+            <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                <TextView
+                        style="@style/Theme.Kikoeru.SettingsRowTitle"
+                        android:text="@string/tag"/>
+            </LinearLayout>
+
+            <TextView
+                    style="@style/Theme.Kikoeru.SettingsRowArrow"
+                    android:text="&#8250;"/>
+        </LinearLayout>
+
+        <View style="@style/Theme.Kikoeru.SettingsDivider"/>
+
+        <LinearLayout
+                android:id="@+id/categoryCircles"
+                style="@style/Theme.Kikoeru.SettingsRow">
+
+            <ImageView
+                    style="@style/Theme.Kikoeru.SettingsRowIcon"
+                    android:contentDescription="@string/circles"
+                    android:src="@drawable/ic_baseline_people_24"/>
+
+            <LinearLayout style="@style/Theme.Kikoeru.SettingsRowMid">
+                <TextView
+                        style="@style/Theme.Kikoeru.SettingsRowTitle"
+                        android:text="@string/circles"/>
+            </LinearLayout>
+
+            <TextView
+                    style="@style/Theme.Kikoeru.SettingsRowArrow"
+                    android:text="&#8250;"/>
+        </LinearLayout>
+    </LinearLayout>
+
 </LinearLayout>

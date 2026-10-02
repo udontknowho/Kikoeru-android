@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@drawable/player_bg"
+    android:background="@color/screen_bg"
               android:orientation="vertical"
               android:gravity="center_horizontal"
     android:layout_height="match_parent">
@@ -19,7 +19,7 @@
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorOnPrimary"
+            android:textColor="@color/ink_primary"
             android:layout_marginBottom="4dp"
             android:textStyle="bold"
             android:textSize="24sp"
@@ -30,7 +30,7 @@
             android:id="@+id/tvVer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorOnPrimary"
+            android:textColor="@color/ink_primary"
             android:layout_marginBottom="22dp"
             android:textStyle="italic"
             android:text="Build_20260509_090801"
@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:text="@string/this_is_a_open_source_project"
-        android:textColor="?attr/colorOnPrimary"
+        android:textColor="@color/ink_primary"
         android:autoLink="web"
         />
 

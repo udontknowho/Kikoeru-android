@@ -174,8 +174,9 @@
     </style>
 <!--    Dialog-->
     <style name="RoundedAlertDialog" parent="Base.RoundedAlertDialog">
-        <!-- 可选：设置标题样式 -->
-        <item name="android:textColorPrimary">@color/black</item>
+        <!-- 弹窗标题/正文跟着主题走（原来写死黑色，深色模式看不见） -->
+        <item name="android:textColorPrimary">@color/ink_primary</item>
+        <item name="colorOnSurface">@color/ink_primary</item>
     </style>
 
     <style name="Base.RoundedAlertDialog" parent="MaterialAlertDialog.Material3">

@@ -11,7 +11,7 @@
                                                      app:layout_constraintStart_toStartOf="parent"
                                                      app:layout_constraintEnd_toEndOf="parent"
                                                      app:layout_constraintTop_toTopOf="parent"
-                                                     android:background="?attr/colorSurface"
+                                                     android:background="@color/screen_bg"
                                                      android:id="@+id/appBarLayout">
         <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:scrollbars="none"
-            android:background="?attr/colorSurface"
+            android:background="@color/screen_bg"
             app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
@@ -296,10 +296,13 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/bottomNav"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="56dp"
                 android:background="@color/card_surface"
                 android:elevation="10dp"
+                app:itemIconSize="21dp"
                 app:itemIconTint="@color/nav_item_color"
+                app:itemPaddingTop="4dp"
+                app:itemPaddingBottom="4dp"
                 app:itemTextColor="@color/nav_item_color"
                 app:labelVisibilityMode="labeled"
                 app:menu="@menu/bottom_nav"/>
