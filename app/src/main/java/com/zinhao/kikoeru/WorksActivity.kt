@@ -151,10 +151,8 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         // 收藏 tab 默认选“我的评价”
         binding.chipGroup.check(R.id.chipReview)
 
-        // 免账号/游客的实例(别人的公开库)没有“我的评价/进度”，把它们收起来
-        if (Api.hostKind(Api.currentHost()) != Api.HostKind.NORMAL) {
-            binding.navFavourites.visibility = View.GONE
-        }
+        // 收藏 tab 一直留着。游客/免账号的站点服务端给不出进度，进去是空列表，
+        // 但入口不再藏起来（藏起来容易被当成功能没了），空列表本身就是答案
         updateNavVisuals()
     }
 
