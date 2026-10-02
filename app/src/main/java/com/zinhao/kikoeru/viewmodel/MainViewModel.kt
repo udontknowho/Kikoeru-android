@@ -92,6 +92,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // 请求还在飞时又来了新的加载请求，等它回来再拉一次
     private var pendingReload = false
 
+    /**
+     * 同步的“在途”标记。判断有没有请求在飞不能用 _loading.value：
+     * postValue 是异步的，回调里紧接着读到的还是旧值，判断会错。
+     */
+    @Volatile
+    private var inFlight = false
+
     // ---- 方法 ----
 
     fun clearWorks() {
@@ -102,10 +109,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadFromNetwork() {
-        if (_loading.value == true) {
+        app.debugLog("MainVM", "loadFromNetwork type=$type page=$page inFlight=$inFlight pendingReload=$pendingReload")
+        if (inFlight) {
             pendingReload = true
             return
         }
+        inFlight = true
         _loading.postValue(true)
 
         // 使用协程包装回调（避免阻塞主线程）
@@ -129,11 +138,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val callback = object : AsyncHttpClient.JSONObjectCallback() {
         override fun onCompleted(e: Exception?, response: AsyncHttpResponse?, jsonObject: JSONObject?) {
+            inFlight = false
             _loading.postValue(false)
             // 期间切了 tab/筛选，或又排了一次加载：本次结果作废
             val discard = pendingReload || requestType != type
+            app.debugLog(
+                "MainVM",
+                "onCompleted code=${response?.code()} err=${e?.message} discard=$discard " +
+                        "type=$type reqType=$requestType 现有=${_works.value?.size ?: 0}"
+            )
             if (pendingReload) {
                 pendingReload = false
+                loadFromNetwork()
+            } else if (discard && _works.value.isNullOrEmpty()) {
+                // 结果作废、列表空着、又没有别的请求在飞：不补这一次的话
+                // 页面就永久空着（切账号后一直刷不出来就是这个）
                 loadFromNetwork()
             }
             if (discard) return
@@ -155,11 +174,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     }
                     // 更新标题
                     _title.postValue("${computeTitle()} ($totalCount)")
+                    app.debugLog("MainVM", "解析成功 works=${fromNetWorkArray.length()} total=$totalCount page=$page")
                     if(fromNetWorkArray.length() > 0) {
                         appendWorks(fromNetWorkArray)
                     }
                 }
             } catch (je: JSONException) {
+                app.debugLog("MainVM", "解析失败: $je")
                 _errorEvent.postValue(je)
             }
         }
@@ -185,6 +206,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         try {
             LocalFileCache.getInstance().readLocalDownloadWorks(object : AsyncHttpClient.JSONObjectCallback() {
                 override fun onCompleted(e: Exception?, response: AsyncHttpResponse?, jsonObject: JSONObject?) {
+                    inFlight = false
                     _loading.postValue(false)
                     if (pendingReload) {
                         pendingReload = false
@@ -207,6 +229,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
             })
         } catch (e: Exception) {
+            inFlight = false
             _errorEvent.postValue(e)
             _loading.postValue(false)
         }
@@ -223,12 +246,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         try {
             LocalFileCache.getInstance().readLastOpenWorks(object : AsyncHttpClient.JSONArrayCallback() {
                 override fun onCompleted(e: Exception?, response: AsyncHttpResponse?, jsonArray: JSONArray?) {
+                    app.debugLog("MainVM", "读上次缓存 err=${e?.message} 条数=${jsonArray?.length() ?: -1}")
                     if (e != null) {
                         // 缓存读取失败，从网络加载
                         loadFromNetwork()
                         return
                     }
-                    jsonArray?.let {
+                    // 空数组不算有效缓存：否则白屏会被当成“上次的内容”永久恢复，
+                    // 之后再也不会请求网络
+                    jsonArray?.takeIf { it.length() > 0 }?.let {
                         appendWorks(it)
                         _title.postValue(lastOpenTitle)
                         _loading.postValue(false)

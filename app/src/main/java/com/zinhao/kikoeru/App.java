@@ -124,32 +124,66 @@ public class App extends Application implements Application.ActivityLifecycleCal
     /**
      * 把未捕获异常的堆栈写到 /sdcard/Android/media/<包名>/crash/ 下。
      * 这个目录别的 App（包括 Termux）能读，方便直接把日志拿过来定位闪退；
-     * 写完仍然交给系统原本的处理器，崩潰对话框不变。
+     * 写完仍然交给系统原本的处理器，崩溃对话框不变。
+     * 只有开发调试模式才落盘，平时闪退不留文件。
      */
     private void installCrashLogger() {
         final Thread.UncaughtExceptionHandler previous = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            try {
-                File[] dirs = getExternalMediaDirs();
-                File dir = new File(dirs != null && dirs.length > 0 ? dirs[0] : getFilesDir(), "crash");
-                if (dir.mkdirs() || dir.isDirectory()) {
-                    String stamp = new SimpleDateFormat("MMdd-HHmmss", java.util.Locale.US).format(new Date());
-                    File out = new File(dir, "crash-" + stamp + ".txt");
-                    PrintWriter pw = new PrintWriter(new FileWriter(out, true));
-                    pw.println("time: " + new Date());
-                    pw.println("thread: " + thread.getName());
-                    pw.println("version: " + BuildConfig.VERSION_NAME);
-                    throwable.printStackTrace(pw);
-                    pw.close();
-                    Log.e("KikoeruCrash", "crash log -> " + out.getAbsolutePath(), throwable);
+            // 在崩溃时判断而不是安装时判断：设置页里一开关就生效，不用重启
+            if (appDebug) {
+                try {
+                    File[] dirs = getExternalMediaDirs();
+                    File dir = new File(dirs != null && dirs.length > 0 ? dirs[0] : getFilesDir(), "crash");
+                    if (dir.mkdirs() || dir.isDirectory()) {
+                        String stamp = new SimpleDateFormat("MMdd-HHmmss", java.util.Locale.US).format(new Date());
+                        File out = new File(dir, "crash-" + stamp + ".txt");
+                        PrintWriter pw = new PrintWriter(new FileWriter(out, true));
+                        pw.println("time: " + new Date());
+                        pw.println("thread: " + thread.getName());
+                        pw.println("version: " + BuildConfig.VERSION_NAME);
+                        throwable.printStackTrace(pw);
+                        pw.close();
+                        Log.e("KikoeruCrash", "crash log -> " + out.getAbsolutePath(), throwable);
+                    }
+                } catch (Throwable ignored) {
+                    // 写日志本身失败就算了，不能因此再抛一次
                 }
-            } catch (Throwable ignored) {
-                // 写日志本身失败就算了，不能因此再抛一次
             }
             if (previous != null) {
                 previous.uncaughtException(thread, throwable);
             }
         });
+    }
+
+    /**
+     * 调试模式下的诊断日志（不闪退的问题，比如切账号后白屏，靠它定位）。
+     * 写到 /sdcard/Android/media/<包名>/log/app.log —— 这个目录别的 App（包括 Termux）能读。
+     * 没开调试模式时直接返回，调用点不用自己判断，也不会留文件。
+     */
+    public void debugLog(String tag, String msg) {
+        if (!appDebug) {
+            return;
+        }
+        Log.d("Kikoeru", "[" + tag + "] " + msg);
+        try {
+            File[] dirs = getExternalMediaDirs();
+            File dir = new File(dirs != null && dirs.length > 0 ? dirs[0] : getFilesDir(), "log");
+            if (!dir.isDirectory() && !dir.mkdirs()) {
+                return;
+            }
+            File out = new File(dir, "app.log");
+            // ponytail: 超过 1MB 直接清空重来，不做滚动归档
+            if (out.length() > 1024 * 1024) {
+                out.delete();
+            }
+            PrintWriter pw = new PrintWriter(new FileWriter(out, true));
+            pw.println(new SimpleDateFormat("MMdd-HHmmss.SSS", java.util.Locale.US).format(new Date())
+                    + " [" + tag + "] " + msg);
+            pw.close();
+        } catch (Throwable ignored) {
+            // 写日志失败不能影响主流程
+        }
     }
 
     public static App getInstance() {
