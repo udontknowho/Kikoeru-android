@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 只给启动图用（activity_launcher）：这里保留原来的粉橙→藕荷渐变。
+     横向播放页/关于页以前也复用它，现在改成 screen_bg，跟竖屏一致 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient android:startColor="@color/second_color"
               android:endColor="@color/forth_color" android:angle="135"/>

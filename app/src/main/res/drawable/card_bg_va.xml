@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/forth_color" />
+    <!-- 作品卡片上的声优片：跟标签片统一 -->
+    <solid android:color="@color/icon_circle_bg" />
     <corners
         android:bottomLeftRadius="5dp"
         android:bottomRightRadius="5dp"

@@ -30,7 +30,7 @@ public class ImageIndicator extends RecyclerView implements ViewPager.OnPageChan
 
     public ImageIndicator(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        imageSelectedColor = ContextCompat.getColor(context, R.color.main_color);
+        imageSelectedColor = ContextCompat.getColor(context, R.color.accent);
     }
 
     public ImageIndicator bindViewPager(ViewPager viewPager) {

@@ -28,7 +28,7 @@ open class BaseActivity : AppCompatActivity() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             enableEdgeToEdge(
                 statusBarStyle = SystemBarStyle.auto(
-                    ContextCompat.getColor(this,R.color.main_color),
+                    ContextCompat.getColor(this,R.color.screen_bg),
                     ContextCompat.getColor(this,R.color.white)
                     ),
             )

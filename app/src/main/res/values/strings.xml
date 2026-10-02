@@ -42,6 +42,7 @@
     <string name="theme_dark">Dark</string>
     <string name="group_server">Servers</string>
     <string name="switch_server">Switch server</string>
+    <string name="confirm_switch_user">Switch to “%1$s”?</string>
     <string name="add_site">＋ Add a server…</string>
     <string name="login_as_guest">Sign in as guest</string>
     <string name="only_load_has_lrc_desc">Hide works without subtitles</string>

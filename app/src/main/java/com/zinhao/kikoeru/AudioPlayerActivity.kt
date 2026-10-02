@@ -309,7 +309,7 @@ class AudioPlayerActivity : BaseActivity(), ServiceConnection, MusicChangeListen
                                 val mainColor = palette.getDarkMutedColor(
                                     ActivityCompat.getColor(
                                         this@AudioPlayerActivity,
-                                        R.color.main_color
+                                        R.color.accent
                                     )
                                 )
                                 viewBinding.root.setBackgroundColor(mainColor)

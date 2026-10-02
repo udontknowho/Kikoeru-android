@@ -234,11 +234,14 @@
     </style>
 
     <!-- 可选：按钮样式 -->
+    <!-- 弹窗按钮跟着全 App 的语义色走。
+         原来“确定”写死 @color/main_color（已退役的粉色），是全 App 唯一没跟上“强调色统一”的地方；
+         “取消”写死 @color/gray，深色模式下也不会跟着变 -->
     <style name="PositiveButton" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/main_color</item>
+        <item name="android:textColor">@color/accent</item>
     </style>
 
     <style name="NegativeButton" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/gray</item>
+        <item name="android:textColor">@color/ink_secondary</item>
     </style>
 </resources>

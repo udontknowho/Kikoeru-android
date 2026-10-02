@@ -28,6 +28,7 @@
     <string name="theme_dark">深色</string>
     <string name="group_server">服务器</string>
     <string name="switch_server">切换服务器</string>
+    <string name="confirm_switch_user">切换到「%1$s」？</string>
     <string name="add_site">＋ 添加站点…</string>
     <string name="login_as_guest">以游客身份进入</string>
     <string name="only_load_has_lrc_desc">没有字幕的作品不显示</string>

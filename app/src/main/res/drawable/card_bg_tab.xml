@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/main_color" />
+    <!-- 新版首页顶部 tab 的选中胶囊：原来是退休的粉色 -->
+    <solid android:color="@color/accent" />
     <corners android:radius="90dp" />
 </shape>

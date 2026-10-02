@@ -28,7 +28,7 @@ class LoadingFooterDecoration(
     private var bgColor: Int = Color.TRANSPARENT
     private var foregroundColor: Int = Color.WHITE
     init {
-        foregroundColor = ContextCompat.getColor(recyclerView.context, R.color.main_color)
+        foregroundColor = ContextCompat.getColor(recyclerView.context, R.color.accent)
     }
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = foregroundColor

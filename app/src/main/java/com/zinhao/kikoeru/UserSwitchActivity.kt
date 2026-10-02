@@ -80,8 +80,10 @@ class UserSwitchActivity : BaseActivity() {
 
     fun switchUser(user: User) {
         val builder = AlertDialog.Builder(this,R.style.RoundedAlertDialog)
-        builder.setTitle("确认切换？")
-        builder.setPositiveButton(R.string.confirm, object : DialogInterface.OnClickListener {
+        // 标题/正文走字符串资源（原来标题是写死的“确认切换？”）；正文说清楚要切到哪个账号
+        builder.setTitle(R.string.account)
+        builder.setMessage(getString(R.string.confirm_switch_user, user.getName()))
+        builder.setPositiveButton(android.R.string.ok, object : DialogInterface.OnClickListener {
             override fun onClick(dialog: DialogInterface, which: Int) {
                 dialog.dismiss()
                 init(user.getToken(), user.getHost())
@@ -92,6 +94,8 @@ class UserSwitchActivity : BaseActivity() {
                 finish()
             }
         })
+        // 原来只有一个“确定”，没有退路；跟其他弹窗对齐，补上取消
+        builder.setNegativeButton(android.R.string.cancel, null)
         builder.create().show()
     }
 

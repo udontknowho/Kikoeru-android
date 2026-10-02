@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- 旧粉色系：界面上一律不再用，只剩启动图还在用
+         （main_color = 启动窗口底色，second/forth = player_bg 那个渐变）
+         third_color 已彻底不用，删掉了 -->
     <color name="main_color">#E2B4BD</color>
     <color name="main_dark">#2e243c</color>
 
     <color name="second_color">#fac2ae</color>
-    <color name="third_color">#d6a9c9</color>
     <color name="forth_color">#b693e0</color>
 
     <color name="pure_80">#9B8EC7</color>

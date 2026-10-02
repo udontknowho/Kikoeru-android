@@ -107,7 +107,8 @@ public class TagsView<T> extends View {
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTypeface(Typeface.MONOSPACE);
         setTextSize(12);
-        textPaint.setColor(Color.WHITE);
+        // 标签片的字色跟强调色走（原先是写死白色，浅色底上根本看不清）
+        textPaint.setColor(context.getColor(R.color.accent));
         Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
         textDistance = (fontMetrics.bottom - fontMetrics.top) / 2 - fontMetrics.bottom;
         rectFH = fontMetrics.bottom - fontMetrics.top;
@@ -329,7 +330,7 @@ public class TagsView<T> extends View {
                 tagBg.setBounds((int) tagRectF.left, (int) tagRectF.top, (int) tagRectF.right, (int) tagRectF.bottom);
                 tagBg.draw(canvas);
             }
-            textPaint.setColor(Color.WHITE);
+            textPaint.setColor(getContext().getColor(R.color.accent));
             textPaint.setStyle(Paint.Style.FILL);
             canvas.drawText(getTagText(i), tagsRectFs.get(i).centerX(), tagsRectFs.get(i).centerY() + textDistance, textPaint);
         }
