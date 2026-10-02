@@ -226,6 +226,10 @@ public class AudioService extends Service {
             @Override
             public void onIsPlayingChanged(boolean isPlaying) {
                 Log.d(TAG, "onIsPlayingChanged: " + isPlaying);
+                // 服务在销毁时 onDestroy 会把 ctrlBinder 置空，此时 MediaSession 的 onStop 还会让 ExoPlayer 回调一次
+                if (ctrlBinder == null) {
+                    return;
+                }
                 ctrlBinder.musicChangeListeners.forEach(new Consumer<MusicChangeListener>() {
                     @Override
                     public void accept(MusicChangeListener listener) {
@@ -271,6 +275,9 @@ public class AudioService extends Service {
             @Override
             public void onMediaMetadataChanged(@NonNull MediaMetadata mediaMetadata) {
                 Log.d(TAG, "onMediaMetadataChanged: " + mediaMetadata.title + ", play state:"+mediaPlayer.getPlaybackState());
+                if (ctrlBinder == null) {
+                    return;
+                }
                 ctrlBinder.current = ctrlBinder.playList.get(mediaPlayer.getCurrentMediaItemIndex());
 
                 MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
