@@ -185,7 +185,9 @@ object Api {
                     val body = response.body?.string()
                     callback.onCompleted(null, LocalResponse(response.code), JSONObject(body?:""))
                 }else{
-                    callback.onCompleted(null, LocalResponse(response.code), JSONObject("{}"))
+                    // 非 2xx 时不要再丢一个空对象下去：调用方拿它当正常响应，报出来的是
+                    // “no value for works” 这种解析错误，看不出真正的状态码
+                    callback.onCompleted(IOException("HTTP ${response.code} ${response.message}"), LocalResponse(response.code), JSONObject("{}"))
                 }
             }
         })
@@ -228,7 +230,7 @@ object Api {
                     val body = response.body?.string()
                     callback.onCompleted(null, LocalResponse(response.code), JSONArray(body))
                 }else{
-                    callback.onCompleted(null, LocalResponse(response.code), JSONArray("[]"))
+                    callback.onCompleted(IOException("HTTP ${response.code} ${response.message}"), LocalResponse(response.code), JSONArray("[]"))
                 }
             }
         })
@@ -392,7 +394,10 @@ object Api {
     fun doGetReview(@Filter filter: String?, page: Int, callback: JSONObjectCallback?) {
         // filter 为空 = “我的评价”（站点 /favourites 的 review 模式）；拼成 &filter=null 会被服务端当成非法值
         val filterQuery = if (filter.isNullOrBlank()) "" else "&filter=$filter"
-        val url = "$HOST/api/review?order=${order}&sort=${makeSort()}&page=${page.coerceAtLeast(1)}$filterQuery"
+        // /api/review 把 order 直接当列名排序（没有 /api/works 里那种 random 分支），
+        // 送 random / create_date 会让服务端 500，客户端只能看到 “no value for works”
+        val reviewOrder = if (order == "random" || order == "create_date") "release" else order
+        val url = "$HOST/api/review?order=$reviewOrder&sort=${makeSort()}&page=${page.coerceAtLeast(1)}$filterQuery"
         callback?.let {
             okhttpGetJsonObject(url,it)
         }
