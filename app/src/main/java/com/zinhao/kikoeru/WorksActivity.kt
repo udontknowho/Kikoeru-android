@@ -3,6 +3,7 @@ package com.zinhao.kikoeru
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
+import android.graphics.Typeface
 import android.os.Bundle
 import android.os.IBinder
 import android.support.v4.media.session.PlaybackStateCompat
@@ -16,6 +17,7 @@ import android.widget.*
 import androidx.activity.addCallback
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.Insets
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.*
@@ -151,8 +153,24 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
 
         // 免账号/游客的实例(别人的公开库)没有“我的评价/进度”，把它们收起来
         if (Api.hostKind(Api.currentHost()) != Api.HostKind.NORMAL) {
-            binding.bottomNav.menu.findItem(R.id.nav_favourites)?.isVisible = false
+            binding.navFavourites.visibility = View.GONE
         }
+        updateNavVisuals()
+    }
+
+    /** 底栏选中状态：颜色 + 加粗 + 顶部指示条 */
+    private fun updateNavVisuals() {
+        applyNavItem(binding.navHomeIcon, binding.navHomeLabel, binding.navHomeIndicator, currentTab == TAB_HOME)
+        applyNavItem(binding.navFavIcon, binding.navFavLabel, binding.navFavIndicator, currentTab == TAB_FAVOURITES)
+        applyNavItem(binding.navMineIcon, binding.navMineLabel, binding.navMineIndicator, currentTab == TAB_MINE)
+    }
+
+    private fun applyNavItem(icon: ImageView, label: TextView, indicator: View, selected: Boolean) {
+        val color = ContextCompat.getColor(this, if (selected) R.color.icon_tint else R.color.ink_secondary)
+        icon.setColorFilter(color)
+        label.setTextColor(color)
+        label.typeface = if (selected) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+        indicator.visibility = if (selected) View.VISIBLE else View.INVISIBLE
     }
 
     /** 点标题：已经配置过的站点列表 + 还没配置的内置站点 + 添加站点 */
@@ -215,15 +233,10 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
     // ==================== 监听器设置 ====================
 
     private fun setupListeners() {
-        // 底栏：首页 / 收藏 / 我的
-        binding.bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> switchTab(TAB_HOME)
-                R.id.nav_favourites -> switchTab(TAB_FAVOURITES)
-                R.id.nav_mine -> switchTab(TAB_MINE)
-            }
-            true
-        }
+        // 底栏：首页 / 收藏 / 我的（自绘的三个项目）
+        binding.navHome.setOnClickListener { switchTab(TAB_HOME) }
+        binding.navFavourites.setOnClickListener { switchTab(TAB_FAVOURITES) }
+        binding.navMine.setOnClickListener { switchTab(TAB_MINE) }
 
         // 收藏 tab 的状态 chip
         chipTypeMap.forEach { (chipId, type) ->
@@ -468,6 +481,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
             return
         }
         currentTab = tab
+        updateNavVisuals()
         when (tab) {
             TAB_HOME -> {
                 binding.chipBar.visibility = View.GONE

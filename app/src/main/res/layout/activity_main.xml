@@ -293,19 +293,79 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"/>
-        <com.google.android.material.bottomnavigation.BottomNavigationView
+        <LinearLayout
                 android:id="@+id/bottomNav"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:background="@color/card_surface"
-                android:elevation="10dp"
-                app:itemIconSize="21dp"
-                app:itemIconTint="@color/nav_item_color"
-                app:itemPaddingTop="6dp"
-                app:itemPaddingBottom="7dp"
-                app:itemTextColor="@color/nav_item_color"
-                app:labelVisibilityMode="labeled"
-                app:menu="@menu/bottom_nav"/>
+                android:orientation="horizontal">
+
+            <FrameLayout
+                    android:id="@+id/navHome"
+                    style="@style/Theme.Kikoeru.NavItem">
+
+                <LinearLayout style="@style/Theme.Kikoeru.NavItemContent">
+                    <ImageView
+                            android:id="@+id/navHomeIcon"
+                            style="@style/Theme.Kikoeru.NavItemIcon"
+                            android:contentDescription="@string/home"
+                            android:src="@drawable/ic_baseline_widgets_24"/>
+                    <TextView
+                            android:id="@+id/navHomeLabel"
+                            style="@style/Theme.Kikoeru.NavItemLabel"
+                            android:text="@string/home"/>
+                </LinearLayout>
+
+                <View
+                        android:id="@+id/navHomeIndicator"
+                        style="@style/Theme.Kikoeru.NavIndicator"
+                        android:layout_gravity="top|center_horizontal"/>
+            </FrameLayout>
+
+            <FrameLayout
+                    android:id="@+id/navFavourites"
+                    style="@style/Theme.Kikoeru.NavItem">
+
+                <LinearLayout style="@style/Theme.Kikoeru.NavItemContent">
+                    <ImageView
+                            android:id="@+id/navFavIcon"
+                            style="@style/Theme.Kikoeru.NavItemIcon"
+                            android:contentDescription="@string/favourites"
+                            android:src="@drawable/ic_baseline_favorite_24"/>
+                    <TextView
+                            android:id="@+id/navFavLabel"
+                            style="@style/Theme.Kikoeru.NavItemLabel"
+                            android:text="@string/favourites"/>
+                </LinearLayout>
+
+                <View
+                        android:id="@+id/navFavIndicator"
+                        style="@style/Theme.Kikoeru.NavIndicator"
+                        android:layout_gravity="top|center_horizontal"/>
+            </FrameLayout>
+
+            <FrameLayout
+                    android:id="@+id/navMine"
+                    style="@style/Theme.Kikoeru.NavItem">
+
+                <LinearLayout style="@style/Theme.Kikoeru.NavItemContent">
+                    <ImageView
+                            android:id="@+id/navMineIcon"
+                            style="@style/Theme.Kikoeru.NavItemIcon"
+                            android:contentDescription="@string/mine"
+                            android:src="@drawable/ic_baseline_people_24"/>
+                    <TextView
+                            android:id="@+id/navMineLabel"
+                            style="@style/Theme.Kikoeru.NavItemLabel"
+                            android:text="@string/mine"/>
+                </LinearLayout>
+
+                <View
+                        android:id="@+id/navMineIndicator"
+                        style="@style/Theme.Kikoeru.NavIndicator"
+                        android:layout_gravity="top|center_horizontal"/>
+            </FrameLayout>
+        </LinearLayout>
     </LinearLayout>
     <LinearLayout
             android:id="@+id/llNetErr"
