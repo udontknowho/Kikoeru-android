@@ -314,17 +314,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun computeTitle(): String {
+        // 标签/声优/社团的筛选名不放标题：标题栏是站点切换入口，筛选名在首页顶部的筛选条上
         return when (type) {
-            TYPE_ALL_WORK -> getApplication<Application>().getString(R.string.app_name)
+            TYPE_ALL_WORK, TYPE_TAG_WORK, TYPE_VA_WORK, TYPE_CIRCLES_WORK ->
+                getApplication<Application>().getString(R.string.app_name)
             TYPE_SELF_LISTENING -> getApplication<Application>().getString(R.string.listening)
             TYPE_SELF_LISTENED -> getApplication<Application>().getString(R.string.listened)
             TYPE_SELF_MARKED -> getApplication<Application>().getString(R.string.marked)
             TYPE_SELF_REPLAY -> getApplication<Application>().getString(R.string.replay)
             TYPE_SELF_POSTPONED -> getApplication<Application>().getString(R.string.postponed)
-            TYPE_TAG_WORK -> tagStr
             TYPE_SELF_REVIEW -> getApplication<Application>().getString(R.string.review)
-            TYPE_VA_WORK -> vaName
-            TYPE_CIRCLES_WORK -> circlesName
             TYPE_LOCAL_WORK -> {
                 if (app.isSaveExternal()) "外部公共目录" else "内部私有目录"
             }

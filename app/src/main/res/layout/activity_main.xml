@@ -21,6 +21,25 @@
                 />
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- 当前筛选（标签/声优/社团）：点一下回到全部作品，标题栏留给站点切换 -->
+    <TextView
+            android:id="@+id/filterBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:background="@color/screen_bg"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="@color/accent"
+            android:textSize="13sp"
+            app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
     <!-- 收藏 tab 的状态筛选（只在该 tab 显示） -->
     <HorizontalScrollView
             android:id="@+id/chipBar"
@@ -29,7 +48,7 @@
             android:visibility="gone"
             android:scrollbars="none"
             android:background="@color/screen_bg"
-            app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
+            app:layout_constraintTop_toBottomOf="@+id/filterBar"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
         <com.google.android.material.chip.ChipGroup

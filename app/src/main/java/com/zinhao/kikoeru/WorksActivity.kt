@@ -148,6 +148,9 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         // 标题上点一下 = 切换已配置的站点
         binding.toolbar.setOnClickListener { showSiteSwitcher() }
 
+        // 筛选条：点一下回到全部作品（标题栏只负责切站点）
+        binding.filterBar.setOnClickListener { showAllWorks() }
+
         // 收藏 tab 默认选“我的评价”
         binding.chipGroup.check(R.id.chipReview)
 
@@ -341,6 +344,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
     private fun observeViewModel() {
         // 作品列表变化
         viewModel.works.observe(this) { worksList ->
+            updateFilterBar()
             if (currentTab != TAB_MINE) {
                 binding.swipe.visibility = View.VISIBLE
                 binding.llNetErr.visibility = View.GONE
@@ -356,6 +360,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
 
         // 标题变化
         viewModel.title.observe(this) { title ->
+            updateFilterBar()
             // “我的”页面的标题是固定的，别被列表回调覆盖
             if (currentTab != TAB_MINE) {
                 // 标题后面加个小箭头，提示点标题能切站点
@@ -480,6 +485,7 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         }
         currentTab = tab
         updateNavVisuals()
+        updateFilterBar()
         when (tab) {
             TAB_HOME -> {
                 binding.chipBar.visibility = View.GONE
@@ -502,11 +508,25 @@ class WorksActivity : BaseActivity(), MusicChangeListener, ServiceConnection, Ta
         }
     }
 
+    /** 首页顶部的筛选条：只在带着标签/声优/社团筛选时出现 */
+    private fun updateFilterBar() {
+        val label = when (viewModel.type) {
+            MainViewModel.TYPE_TAG_WORK -> getString(R.string.filter_active, getString(R.string.tag), viewModel.tagStr)
+            MainViewModel.TYPE_VA_WORK -> getString(R.string.filter_active, getString(R.string.va_voicer), viewModel.vaName)
+            MainViewModel.TYPE_CIRCLES_WORK -> getString(R.string.filter_active, getString(R.string.circles), viewModel.circlesName)
+            else -> ""
+        }
+        val show = currentTab == TAB_HOME && label.isNotEmpty()
+        binding.filterBar.visibility = if (show) View.VISIBLE else View.GONE
+        if (show) binding.filterBar.text = label
+    }
+
     /** 首页 = 全部作品，且不允许带着上次的筛选状态进来 */
     private fun showAllWorks() {
         binding.swipe.visibility = View.VISIBLE
         binding.llNetErr.visibility = View.GONE
         viewModel.resetFilter()
+        updateFilterBar()
         viewModel.clearWorks()
         viewModel.loadFromNetwork()
     }
